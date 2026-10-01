@@ -1395,14 +1395,16 @@ html.tw-high-contrast .blive-notif-kpi     { border-color: #fff; background: #00
 html.tw-high-contrast .blive-counter-tile  { background: #000; border-color: #fff; }
 html.tw-high-contrast .blive-transparency  { background: #000; border-color: #fff; }
 
+
 /* =================================================================
    PRINT STYLESHEET — clean A4 output
-   Hides all chrome; prints main content in black-on-white.
+   Hides navigation chrome; keeps ownership/legal notice visible.
    Reference: GIGW guideline — portal pages should be printable.
 ================================================================= */
 @media print {
 
-  /* Hide all interactive / navigational chrome */
+  /* Hide interactive / navigational chrome — but NOT the footer itself:
+     the ownership notice and legal bar must remain visible on paper. */
   #skip-to-main,
   .disclaimer-bar,
   .a11y-toolbar,
@@ -1410,7 +1412,8 @@ html.tw-high-contrast .blive-transparency  { background: #000; border-color: #ff
   #app-header,
   .mobile-menu-btn,
   #mobile-nav,
-  #app-footer,
+  .footer-top-row,
+  .footer-section-grid,
   .btn, .btn-sm, .btn-primary, .btn-secondary,
   .btn-danger, .btn-success, .btn-warning {
     display: none !important;
@@ -1474,7 +1477,12 @@ html.tw-high-contrast .blive-transparency  { background: #000; border-color: #ff
   .ql-pagehead__eyebrow { color: #555 !important; }
   .ql-pagehead__title   { color: #000 !important; }
 
-  /* Keep ownership / disclosure notices visible */
+  /* Footer: hide nav columns, keep ownership + legal bar */
+  .app-footer {
+    background: #fff !important;
+    border-top: 1pt solid #ccc !important;
+    padding: 8pt 0 !important;
+  }
   .footer-ownership {
     display: block !important;
     background: #f9f9f9 !important;
@@ -1482,5 +1490,13 @@ html.tw-high-contrast .blive-transparency  { background: #000; border-color: #ff
     color: #333 !important;
     padding: 6pt 8pt !important;
     font-size: 8pt;
+    margin-bottom: 6pt;
+  }
+  .footer-ownership strong { color: #000 !important; display: inline !important; }
+  .footer-legal-bar {
+    display: flex !important;
+    color: #555 !important;
+    font-size: 8pt !important;
+    border-top: none !important;
   }
 }
