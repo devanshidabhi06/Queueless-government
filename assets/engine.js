@@ -271,6 +271,16 @@
       throw new Error("Please tick the consent box to enable reminders.");
     }
 
+    var p = opts.phone.trim();
+    var hasActive = STATE.tokens.some(function(t) {
+      return t.phone === p && t.serviceId === opts.serviceId && (t.status === "ISSUED" || t.status === "CALLED");
+    });
+    if (hasActive) {
+      var masked = p.length > 4 ? "****" + p.slice(-4) : "****";
+      audit("TOKEN_BLOCKED_DUPLICATE", null, "SYSTEM", { notes: "Blocked duplicate token for phone " + masked + " (Service: " + opts.serviceId + ")" });
+      throw new Error("You already have an active token for this service.");
+    }
+
     STATE._seq++;
     var tok = {
       id:               uid(),
