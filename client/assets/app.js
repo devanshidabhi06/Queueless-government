@@ -187,6 +187,7 @@ function pageTakeToken(el) {
             }).join(""),
           '</select>',
         '</div>',
+        '<div id="tt-reqs-panel" style="margin-bottom:14px"></div>',
 
         '<div class="form-group" style="margin-bottom:14px">',
           '<label class="form-label" for="tt-name">Name <span style="color:var(--color-muted);font-weight:400">(optional)</span></label>',
@@ -220,6 +221,29 @@ function pageTakeToken(el) {
   var form   = el.querySelector("#take-token-form");
   var result = el.querySelector("#tt-result");
   var submit = el.querySelector("#tt-submit");
+  var svcSel = el.querySelector("#tt-svc");
+  var reqsPanel = el.querySelector("#tt-reqs-panel");
+
+  function renderReqs() {
+    var sId = svcSel.value;
+    if (!sId) {
+      reqsPanel.innerHTML = '<div style="background:rgba(255,255,255,0.05);border:1px dashed var(--color-border);padding:12px;border-radius:4px;font-size:0.85rem;color:var(--color-text-soft);text-align:center">Select a service to view required documents.</div>';
+      return;
+    }
+    var svc = svcs.filter(function(x) { return x.id === sId; })[0];
+    if (!svc || !svc.requirements || svc.requirements.length === 0) {
+      reqsPanel.innerHTML = '';
+      return;
+    }
+    var html = '<div class="ql-section" style="padding:12px;background:rgba(14,165,233,0.05);border-color:rgba(14,165,233,0.2);margin:0">';
+    html += '<div style="font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--color-brand);margin-bottom:8px">Documents Required (Demo)</div>';
+    html += '<ul style="margin:0;padding-left:20px;font-size:0.85rem;color:var(--color-text-soft)">';
+    svc.requirements.forEach(function(r) { html += '<li style="margin-bottom:4px">' + esc(r) + '</li>'; });
+    html += '</ul></div>';
+    reqsPanel.innerHTML = html;
+  }
+  svcSel.addEventListener("change", renderReqs);
+  renderReqs();
 
   form.addEventListener("submit", function(e) {
     e.preventDefault();
@@ -307,6 +331,21 @@ function pageTokenStatus(el) {
             tok.calledAt ? 'Called at: <span class="ql-nums">' + fmtTime(tok.calledAt) + '</span>' : "",
             tok.servedAt ? ' &bull; Served: <span class="ql-nums">' + fmtTime(tok.servedAt) + '</span>' : "",
           '</div>',
+
+          (function() {
+            var allSvcs = Engine.getServices(tok.officeId || "off-001");
+            var svc = allSvcs.filter(function(x) { return x.id === tok.serviceId; })[0];
+            if (svc && svc.requirements && svc.requirements.length > 0) {
+              var h = '<div class="ql-section" style="margin-top:16px;padding:12px;background:rgba(255,255,255,0.03);border-color:var(--color-border);text-align:left">';
+              h += '<div style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--color-muted);margin-bottom:8px">Documents Required (Demo)</div>';
+              h += '<ul style="margin:0;padding-left:20px;font-size:0.8rem;color:var(--color-text-soft)">';
+              svc.requirements.forEach(function(r) { h += '<li style="margin-bottom:4px">' + esc(r) + '</li>'; });
+              h += '</ul></div>';
+              return h;
+            }
+            return "";
+          })(),
+
         '</div>',
 
         isActive ? [
