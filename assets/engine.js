@@ -55,9 +55,9 @@
   ];
 
   var SEED_SERVICES = [
-    { id: "svc-001", officeId: "off-001", name: "Driving Licence Renewal",  avgServiceSeconds: 20, activeCounters: 2 },
-    { id: "svc-002", officeId: "off-001", name: "Ration Card Amendment",    avgServiceSeconds: 20, activeCounters: 1 },
-    { id: "svc-003", officeId: "off-001", name: "Income Certificate",       avgServiceSeconds: 20, activeCounters: 1 },
+    { id: "svc-001", officeId: "off-001", name: "Driving Licence Renewal",  avgServiceSeconds: 20, activeCounters: 2, requirements: ["Valid old licence", "Address proof", "Medical certificate", "Passport size photo"] },
+    { id: "svc-002", officeId: "off-001", name: "Ration Card Amendment",    avgServiceSeconds: 20, activeCounters: 1, requirements: ["Original ration card", "Address proof", "Aadhaar copy of family members", "Passport size photo"] },
+    { id: "svc-003", officeId: "off-001", name: "Income Certificate",       avgServiceSeconds: 20, activeCounters: 1, requirements: ["Valid photo ID", "Address proof", "Income declaration", "Supporting income records"] },
   ];
 
   /* Seed citizen specs — staggered createdAt produces realistic ETAs */
