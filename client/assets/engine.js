@@ -89,19 +89,28 @@
   /* ================================================================
      INTERNAL HELPERS
   ================================================================ */
-  /** Active (ISSUED + CALLED) tokens for a service, oldest-first */
+  /** Active (ISSUED, CALLED, RESERVED) tokens for a service, oldest-first */
   function activeQueue(serviceId) {
     return STATE.tokens
       .filter(function(t) {
-        return t.serviceId === serviceId && (t.status === "ISSUED" || t.status === "CALLED");
+        return t.serviceId === serviceId && (t.status === "ISSUED" || t.status === "CALLED" || t.status === "RESERVED");
       })
-      .sort(function(a, b) { return a.createdAt - b.createdAt; });
+      .sort(function(a, b) { 
+        var timeA = a.checkedInAt ? a.checkedInAt.getTime() : a.createdAt.getTime();
+        var timeB = b.checkedInAt ? b.checkedInAt.getTime() : b.createdAt.getTime();
+        return timeA - timeB; 
+      });
   }
 
   /** How many active tokens joined before this one */
   function ahead(token) {
     return activeQueue(token.serviceId)
-      .filter(function(t) { return t.createdAt < token.createdAt; })
+      .filter(function(t) { 
+        if (t.status === "RESERVED") return false;
+        var tTime = t.checkedInAt ? t.checkedInAt.getTime() : t.createdAt.getTime();
+        var myTime = token.checkedInAt ? token.checkedInAt.getTime() : token.createdAt.getTime();
+        return tTime < myTime; 
+      })
       .length;
   }
 
@@ -194,6 +203,8 @@
         name:             spec.name || null,
         phone:            spec.phone,
         status:           "ISSUED",
+        joinMode:         "ON_SITE",
+        checkedInAt:      new Date(base - (SEED_SPECS.length - i) * 3500),
         notifyWhatsApp:   !!spec.wa,
         notifySms:        !!spec.sms,
         consentGiven:     !!spec.consent,
@@ -273,13 +284,16 @@
 
     var p = opts.phone.trim();
     var hasActive = STATE.tokens.some(function(t) {
-      return t.phone === p && t.serviceId === opts.serviceId && (t.status === "ISSUED" || t.status === "CALLED");
+      return t.phone === p && t.serviceId === opts.serviceId && (t.status === "ISSUED" || t.status === "CALLED" || t.status === "RESERVED");
     });
     if (hasActive) {
       var masked = p.length > 4 ? "****" + p.slice(-4) : "****";
       audit("TOKEN_BLOCKED_DUPLICATE", null, "SYSTEM", { notes: "Blocked duplicate token for phone " + masked + " (Service: " + opts.serviceId + ")" });
       throw new Error("You already have an active token for this service.");
     }
+
+    var jMode = opts.joinMode === "REMOTE" ? "REMOTE" : "ON_SITE";
+    var isRemote = jMode === "REMOTE";
 
     STATE._seq++;
     var tok = {
@@ -288,8 +302,10 @@
       serviceId:        opts.serviceId,
       tokenNumber:      "TW-" + pad4(STATE._seq),
       name:             (opts.name || "").trim() || null,
-      phone:            opts.phone.trim(),
-      status:           "ISSUED",
+      phone:            p,
+      status:           isRemote ? "RESERVED" : "ISSUED",
+      joinMode:         jMode,
+      checkedInAt:      isRemote ? null : now(),
       notifyWhatsApp:   !!opts.notifyWhatsApp,
       notifySms:        !!opts.notifySms,
       consentGiven:     !!opts.consentGiven,
@@ -313,14 +329,31 @@
     return enrich(t);
   };
 
+  /** Check-in a RESERVED token (citizen-initiated) */
+  Engine.checkIn = function (idOrNum) {
+    var str = String(idOrNum).trim();
+    var t = STATE.tokens.find(function(tok) { return tok.id === str || tok.tokenNumber === str.toUpperCase(); });
+    if (!t) throw new Error("Token not found.");
+    if (t.status !== "RESERVED") throw new Error("Token is already checked in or not reserved.");
+    t.checkedInAt = now();
+    t.status = "ISSUED";
+    audit("TOKEN_CHECKED_IN", t.id, "citizen");
+    return enrich(t);
+  };
+
   /* ── Admin mutations ─────────────────────────────────────────── */
   /**
-   * Call the next ISSUED token in a service queue.
+   * Call the next ISSUED and checked-in token in a service queue.
    * @returns enriched token, or null if queue is empty.
    */
   Engine.callNext = function (serviceId) {
-    var issued = activeQueue(serviceId).filter(function(t) { return t.status === "ISSUED"; });
-    if (!issued.length) return null;
+    var q = activeQueue(serviceId);
+    var issued = q.filter(function(t) { return t.status === "ISSUED" && t.checkedInAt; });
+    if (!issued.length) {
+      var reserved = q.filter(function(t) { return t.status === "RESERVED"; });
+      if (reserved.length > 0) throw new Error("No checked-in tokens available. There are remote tokens waiting to check in.");
+      return null;
+    }
     var next     = issued[0];
     next.status  = "CALLED";
     next.calledAt = now();
@@ -366,7 +399,7 @@
   Engine.runReminderCheck = function () {
     var created = [];
     var active  = STATE.tokens.filter(function(t) {
-      return t.status === "ISSUED" || t.status === "CALLED";
+      return (t.status === "ISSUED" || t.status === "CALLED") && t.checkedInAt;
     });
 
     active.forEach(function(tok) {
