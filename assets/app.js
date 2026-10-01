@@ -78,6 +78,7 @@ function pageHero(title, subtitle) {
 
 function badge(status) {
   if (status === "RESERVED") return '<span class="badge badge-issued" style="background:rgba(251,191,36,0.2);color:#fbbf24;border-color:rgba(251,191,36,0.3)">Not checked-in</span>';
+  if (status === "UNABLE_TO_PROCESS") return '<span class="badge badge-error">Unable to Process</span>';
   return window.QL ? window.QL.badge(status) :
     '<span class="badge badge-' + status.toLowerCase() + '">' + status + '</span>';
 }
@@ -314,6 +315,7 @@ function pageTokenStatus(el) {
 
     var isActive = tok.status === "ISSUED" || tok.status === "CALLED";
     var isReserved = tok.status === "RESERVED";
+    var isUnable = tok.status === "UNABLE_TO_PROCESS";
     var etaPulse = isActive && tok.etaSeconds != null && tok.etaSeconds <= 60 ?
       ' style="color:#fbbf24;animation:live-ping 1.8s ease-out infinite"' : "";
 
@@ -323,6 +325,13 @@ function pageTokenStatus(el) {
           '<div style="font-size:0.65rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-muted);margin-bottom:8px">Token Number</div>',
           '<div class="ql-nums" style="font-size:3.5rem;font-weight:800;letter-spacing:-0.04em;line-height:1;color:#fff;margin-bottom:10px">' + esc(tok.tokenNumber) + '</div>',
           '<div style="display:flex;justify-content:center;gap:8px;margin-bottom:16px">' + badge(tok.status) + '</div>',
+
+          isUnable ? [
+            '<div class="alert alert-error" style="text-align:left;margin-bottom:16px">',
+              '<div style="font-weight:600;margin-bottom:4px">We were unable to process your request</div>',
+              '<div style="font-size:0.85rem">Reason: <strong>' + esc(tok.outcomeReason || "Other") + '</strong></div>',
+            '</div>',
+          ].join("") : "",
 
           isReserved ? [
             '<div style="background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.3);border-radius:4px;padding:12px;margin-bottom:16px;text-align:left">',
@@ -511,7 +520,8 @@ function pageAdminQueue(el) {
             '<td style="white-space:nowrap">',
               calledRow ? [
                 '<button class="btn btn-success btn-sm aq-serve" data-id="' + t.id + '" style="margin-right:4px">Served</button>',
-                '<button class="btn btn-warning btn-sm aq-noshow" data-id="' + t.id + '">No-Show</button>',
+                '<button class="btn btn-warning btn-sm aq-noshow" data-id="' + t.id + '" style="margin-right:4px">No-Show</button>',
+                '<button class="btn btn-danger btn-sm aq-unable" data-id="' + t.id + '">Unable...</button>',
               ].join("") : "",
             '</td>',
           '</tr>',
@@ -635,6 +645,36 @@ function pageAdminQueue(el) {
         Engine.noShow(btn.dataset.id);
         Engine.runReminderCheck();
         render();
+      });
+    });
+
+    el.querySelectorAll(".aq-unable").forEach(function(btn) {
+      btn.addEventListener("click", function() {
+        var parent = btn.parentNode;
+        parent.innerHTML = [
+          '<select class="form-input aq-unable-reason" style="width:140px;display:inline-block;margin-right:4px;padding:2px 4px;font-size:0.75rem;height:26px">',
+            '<option value="Missing documents">Missing documents</option>',
+            '<option value="Details mismatch">Details mismatch</option>',
+            '<option value="Payment pending">Payment pending</option>',
+            '<option value="Applicant not present">Applicant not present</option>',
+            '<option value="Other">Other</option>',
+          '</select>',
+          '<button class="btn btn-danger btn-sm aq-unable-confirm" data-id="' + btn.dataset.id + '">OK</button>',
+          '<button class="btn btn-secondary btn-sm aq-unable-cancel" style="margin-left:4px">Cancel</button>'
+        ].join("");
+
+        parent.querySelector(".aq-unable-cancel").addEventListener("click", function() {
+          render(); // Reset row to normal
+        });
+
+        parent.querySelector(".aq-unable-confirm").addEventListener("click", function() {
+          var reason = parent.querySelector(".aq-unable-reason").value;
+          try {
+            Engine.unableToProcess(btn.dataset.id, reason);
+            Engine.runReminderCheck();
+            render();
+          } catch(e) { alert(e.message); }
+        });
       });
     });
 
