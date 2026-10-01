@@ -50,8 +50,9 @@ html { scroll-behavior: smooth; }
 body {
   background-color: var(--color-bg);
   color: var(--color-text);
-  font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
-  font-size: 0.9375rem;          /* 15px base — less exaggerated than 16 */
+  /* Noto Sans — GIGW/UX4G portal reference; Devanagari + Latin support */
+  font-family: "Noto Sans", ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.9375rem;          /* 15px base */
   line-height: 1.5;
   min-height: 100dvh;
   display: flex;
@@ -129,6 +130,88 @@ body {
   color: var(--color-accent);
 }
 
+/* ── Skip to main content link ──────────────────────────────────── */
+/* Visually hidden until focused — WCAG 2.4.1 bypass blocks */
+.skip-link {
+  position: absolute;
+  top: -100px;               /* off-screen by default */
+  left: var(--space-2);
+  z-index: 9999;
+  padding: 8px 16px;
+  background: var(--color-brand);
+  color: #fff;
+  font-size: 0.875rem;
+  font-weight: 700;
+  border-radius: var(--radius-btn);
+  text-decoration: none;
+  transition: top 0.15s ease;
+}
+.skip-link:focus {
+  top: var(--space-1);       /* slides into view on Tab key */
+  outline: 3px solid #fff;
+  outline-offset: 2px;
+}
+
+/* ── Government utility strip (DBIM/NIC portal top bar) ─────────── */
+.gov-utility-strip {
+  background: #0f1f36;         /* slightly darker than main bg — structural cue */
+  border-bottom: 1px solid var(--color-border);
+  position: sticky;
+  top: 56px;                   /* below disclaimer(28) + a11y-toolbar(28) */
+  z-index: 42;
+}
+
+.gov-utility-strip__inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 4px var(--space-2);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.gov-utility-strip__notice {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: #fbbf24;              /* amber — matches disclaimer bar tone */
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 60%;
+}
+
+.gov-utility-strip__links {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.gov-utility-link {
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: var(--color-text-soft);
+  text-decoration: none;
+  padding: 1px 3px;
+  border-radius: 2px;
+  transition: color var(--transition);
+}
+.gov-utility-link:hover { color: var(--color-accent); text-decoration: underline; }
+.gov-utility-link:focus-visible {
+  outline: 3px solid var(--color-brand);
+  outline-offset: 2px;
+  color: var(--color-text);
+}
+
+.gov-utility-sep {
+  font-size: 0.65rem;
+  color: var(--color-border);
+  user-select: none;
+}
+
 /* ── Header ─────────────────────────────────────────────────────── */
 .app-header {
   background: rgba(15, 23, 42, 0.94);
@@ -136,7 +219,7 @@ body {
   -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--color-border);
   position: sticky;
-  top: 56px;                 /* disclaimer(28) + toolbar(28) */
+  top: 84px;                 /* disclaimer(28) + toolbar(28) + utility-strip(28) */
   z-index: 40;
 }
 
@@ -253,11 +336,11 @@ body {
   padding: var(--space-3) var(--space-2) var(--space-4);
 }
 
-/* ── Footer ─────────────────────────────────────────────────────── */
+/* ── Footer (DBIM-style multi-column gov portal layout) ────────── */
 .app-footer {
-  background: var(--color-card);
-  border-top: 1px solid var(--color-border);
-  padding: var(--space-3) var(--space-2);
+  background: #0b1526;         /* slightly darker than main — structural footer cue */
+  border-top: 2px solid var(--color-border);
+  padding: var(--space-4) var(--space-2) var(--space-3);
   margin-top: auto;
 }
 
@@ -266,9 +349,13 @@ body {
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 12px;
-  text-align: center;
+  gap: var(--space-3);
+}
+
+/* Top brand row */
+.footer-top-row {
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: var(--space-2);
 }
 
 .footer-brand {
@@ -277,12 +364,39 @@ body {
   gap: var(--space-1);
   font-size: 0.9rem;
 }
+.footer-brand__name {
+  font-weight: 700;
+  color: var(--color-text);
+}
+.footer-brand__sub {
+  font-size: 0.8rem;
+  color: var(--color-muted);
+}
 
-.footer-links {
+/* Three-column links grid */
+.footer-section-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: var(--space-3) var(--space-4);
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.footer-col {
   display: flex;
-  flex-wrap: wrap;
-  gap: 6px 16px;
-  justify-content: center;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.footer-col__heading {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-brand);
+  margin-bottom: 4px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid rgba(14,165,233,0.2);
 }
 
 .footer-link {
@@ -290,16 +404,42 @@ body {
   color: var(--color-text-soft);
   text-decoration: none;
   transition: color var(--transition);
+  line-height: 1.7;
 }
-.footer-link:hover { color: var(--color-accent); }
+.footer-link:hover { color: var(--color-accent); text-decoration: underline; }
 .footer-link:focus-visible { outline: 3px solid var(--color-brand); outline-offset: 2px; border-radius: 2px; }
 
-.footer-legal {
-  font-size: 0.72rem;
-  color: var(--color-muted);
-  max-width: 580px;
+/* Ownership / prototype notice — required, must not be removed */
+.footer-ownership {
+  background: rgba(245,158,11,0.07);
+  border: 1px solid rgba(245,158,11,0.2);
+  border-left: 3px solid #f59e0b;
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font-size: 0.78rem;
+  color: var(--color-text-soft);
   line-height: 1.6;
 }
+.footer-ownership strong {
+  display: block;
+  color: #fcd34d;
+  margin-bottom: 4px;
+  font-size: 0.8rem;
+}
+
+/* Legal / copyright bar */
+.footer-legal-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  font-size: 0.72rem;
+  color: var(--color-muted);
+  padding-top: var(--space-1);
+  border-top: 1px solid var(--color-border);
+}
+.footer-legal-bar strong { color: var(--color-text-soft); }
 
 /* ── Page entry animation ───────────────────────────────────────── */
 .page {
@@ -1254,3 +1394,93 @@ html.tw-high-contrast .blive-delivery-bar  { background: #444; }
 html.tw-high-contrast .blive-notif-kpi     { border-color: #fff; background: #000; }
 html.tw-high-contrast .blive-counter-tile  { background: #000; border-color: #fff; }
 html.tw-high-contrast .blive-transparency  { background: #000; border-color: #fff; }
+
+/* =================================================================
+   PRINT STYLESHEET — clean A4 output
+   Hides all chrome; prints main content in black-on-white.
+   Reference: GIGW guideline — portal pages should be printable.
+================================================================= */
+@media print {
+
+  /* Hide all interactive / navigational chrome */
+  #skip-to-main,
+  .disclaimer-bar,
+  .a11y-toolbar,
+  .gov-utility-strip,
+  #app-header,
+  .mobile-menu-btn,
+  #mobile-nav,
+  #app-footer,
+  .btn, .btn-sm, .btn-primary, .btn-secondary,
+  .btn-danger, .btn-success, .btn-warning {
+    display: none !important;
+  }
+
+  /* A4 page setup */
+  @page { size: A4 portrait; margin: 20mm 15mm; }
+
+  html, body {
+    background: #fff !important;
+    color: #000 !important;
+    font-family: "Noto Sans", sans-serif;
+    font-size: 11pt;
+    line-height: 1.5;
+  }
+
+  /* Main content: full-width, no padding */
+  .app-root {
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Cards: flat, bordered */
+  .card, .ql-section {
+    background: #fff !important;
+    border: 1px solid #ccc !important;
+    box-shadow: none !important;
+    break-inside: avoid;
+  }
+
+  /* Tables: full-width with borders */
+  .ql-table { width: 100%; border-collapse: collapse; }
+  .ql-table th,
+  .ql-table td {
+    border: 1px solid #999 !important;
+    color: #000 !important;
+    background: transparent !important;
+    padding: 4pt 6pt !important;
+    font-size: 9pt;
+  }
+
+  /* Token numbers: preserve tabular display */
+  .ql-nums { font-variant-numeric: tabular-nums; color: #000 !important; }
+
+  /* Badges: text-only */
+  .badge {
+    background: transparent !important;
+    border: 1px solid #666 !important;
+    color: #000 !important;
+    padding: 1pt 4pt;
+  }
+
+  /* Headings */
+  h1, h2, h3 { color: #000 !important; page-break-after: avoid; }
+
+  /* Suppress href printing (hash routes are meaningless on paper) */
+  a[href]::after { content: none; }
+
+  /* Page-head */
+  .ql-pagehead__eyebrow { color: #555 !important; }
+  .ql-pagehead__title   { color: #000 !important; }
+
+  /* Keep ownership / disclosure notices visible */
+  .footer-ownership {
+    display: block !important;
+    background: #f9f9f9 !important;
+    border-left: 3pt solid #aaa !important;
+    color: #333 !important;
+    padding: 6pt 8pt !important;
+    font-size: 8pt;
+  }
+}

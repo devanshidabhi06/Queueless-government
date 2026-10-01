@@ -1,169 +1,206 @@
 <!DOCTYPE html>
 <html lang="en" class="h-full">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>QueueLess — Virtual Token System</title>
-    <meta
-      name="description"
-      content="QueueLess reduces physical waiting at government offices by issuing virtual tokens with real-time ETA and WhatsApp/SMS reminders."
-    />
 
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>QueueLess — Virtual Token System</title>
+  <meta name="description"
+    content="QueueLess reduces physical waiting at government offices by issuing virtual tokens with real-time ETA and WhatsApp/SMS reminders." />
 
-    <!-- Google Fonts: Inter -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
-      rel="stylesheet"
-    />
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
 
-    <!-- App CSS -->
-    <link rel="stylesheet" href="assets/styles.css" />
+  <!-- Google Fonts: Noto Sans — GIGW/UX4G portal reference font (Latin + Devanagari support) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap"
+    rel="stylesheet" />
 
-    <!-- Tailwind config -->
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            fontFamily: {
-              sans: ["Inter", "ui-sans-serif", "system-ui"],
+  <!-- App CSS -->
+  <link rel="stylesheet" href="assets/styles.css" />
+
+  <!-- Tailwind config -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ["Noto Sans", "ui-sans-serif", "system-ui", "sans-serif"],
+          },
+          colors: {
+            brand: {
+              50: "#f0f9ff",
+              100: "#e0f2fe",
+              200: "#bae6fd",
+              400: "#38bdf8",
+              500: "#0ea5e9",
+              600: "#0284c7",
+              700: "#0369a1",
+              800: "#075985",
+              900: "#0c4a6e",
             },
-            colors: {
-              brand: {
-                50:  "#f0f9ff",
-                100: "#e0f2fe",
-                200: "#bae6fd",
-                400: "#38bdf8",
-                500: "#0ea5e9",
-                600: "#0284c7",
-                700: "#0369a1",
-                800: "#075985",
-                900: "#0c4a6e",
-              },
-              surface: {
-                DEFAULT: "#0f172a",
-                card:    "#1e293b",
-                border:  "#334155",
-                muted:   "#475569",
-              },
+            surface: {
+              DEFAULT: "#0f172a",
+              card: "#1e293b",
+              border: "#334155",
+              muted: "#475569",
             },
           },
         },
-      };
-    </script>
-  </head>
+      },
+    };
+  </script>
+</head>
 
-  <body class="h-full font-sans bg-surface text-slate-100 flex flex-col">
+<body class="h-full font-sans bg-surface text-slate-100 flex flex-col">
 
-    <!-- ===== DISCLAIMER BAR ===== -->
-    <div id="disclaimer-bar" class="disclaimer-bar">
-      <span class="font-semibold">&#9888; Demo Mode:</span>
-      Reminder thresholds are set to <strong>60 s / 30 s</strong> for hackathon judging.
-      Production thresholds would be 10 min / 5 min.
-      ETA uses explainable queue math &#8212; not AI.
-      Last updated: <strong>Sep 30, 2026</strong>.
+  <!-- ===== SKIP TO MAIN CONTENT (keyboard / screen-reader accessibility) ===== -->
+  <a href="#app-root" id="skip-to-main" class="skip-link">Skip to main content</a>
+
+  <!-- ===== DISCLAIMER BAR (non-negotiable — must remain) ===== -->
+  <div id="disclaimer-bar" class="disclaimer-bar">
+    <span class="font-semibold">&#9888; Demo Mode:</span>
+    Reminder thresholds are set to <strong>60 s / 30 s</strong> for hackathon judging.
+    Production thresholds would be 10 min / 5 min.
+    ETA uses explainable queue math &#8212; not AI.
+    Last updated: <strong>Sep 30, 2026</strong>.
+  </div>
+
+  <!-- ===== ACCESSIBILITY TOOLBAR ===== -->
+  <div id="a11y-toolbar" class="a11y-toolbar" role="region" aria-label="Accessibility options">
+    <div class="a11y-toolbar__inner">
+      <span class="a11y-toolbar__label" aria-hidden="true">Accessibility:</span>
+      <button id="a11y-text-size" class="a11y-btn" type="button" aria-pressed="false"
+        title="Toggle larger text size (stored in browser)">
+        &#65;&#8593; Text Size
+      </button>
+      <button id="a11y-contrast" class="a11y-btn" type="button" aria-pressed="false"
+        title="Toggle high-contrast mode (bg black, text white, links yellow)">
+        &#9680; High Contrast
+      </button>
+      <button id="a11y-motion" class="a11y-btn" type="button" aria-pressed="false"
+        title="Disable animations and transitions">
+        &#9208;&#65039; Reduce Motion
+      </button>
     </div>
+  </div>
 
-    <!-- ===== ACCESSIBILITY TOOLBAR ===== -->
-    <div id="a11y-toolbar" class="a11y-toolbar" role="region" aria-label="Accessibility options">
-      <div class="a11y-toolbar__inner">
-        <span class="a11y-toolbar__label" aria-hidden="true">Accessibility:</span>
-        <button
-          id="a11y-text-size"
-          class="a11y-btn"
-          type="button"
-          aria-pressed="false"
-          title="Toggle larger text size (stored in browser)"
-        >
-          &#65;&#8593; Text Size
-        </button>
-        <button
-          id="a11y-contrast"
-          class="a11y-btn"
-          type="button"
-          aria-pressed="false"
-          title="Toggle high-contrast mode (bg black, text white, links yellow)"
-        >
-          &#9680; High Contrast
-        </button>
-        <button
-          id="a11y-motion"
-          class="a11y-btn"
-          type="button"
-          aria-pressed="false"
-          title="Disable animations and transitions"
-        >
-          &#9208;&#65039; Reduce Motion
-        </button>
+  <!-- ===== GOVERNMENT UTILITY STRIP (DBIM/NIC portal pattern) ===== -->
+  <div id="gov-utility-strip" class="gov-utility-strip" role="navigation" aria-label="Utility links">
+    <div class="gov-utility-strip__inner">
+      <span class="gov-utility-strip__notice">&#9888; Hackathon Prototype &mdash; Not an official Government website.</span>
+      <div class="gov-utility-strip__links" aria-label="Quick utility links">
+        <a href="#/" class="gov-utility-link">Sitemap</a>
+        <span class="gov-utility-sep" aria-hidden="true">|</span>
+        <a href="#/" class="gov-utility-link">Help</a>
+        <span class="gov-utility-sep" aria-hidden="true">|</span>
+        <a href="#/" class="gov-utility-link">Contact</a>
       </div>
     </div>
+  </div>
 
-    <!-- ===== HEADER ===== -->
-    <header id="app-header" class="app-header">
-      <div class="header-inner">
-        <a href="#/" id="logo-link" class="logo" aria-label="QueueLess home">
-          <span class="logo-icon" aria-hidden="true">&#127963;</span>
-          <span class="logo-text">Queue<span class="text-brand-400">Less</span></span>
-        </a>
+  <!-- ===== HEADER ===== -->
+  <header id="app-header" class="app-header">
+    <div class="header-inner">
+      <a href="#/" id="logo-link" class="logo" aria-label="QueueLess home">
+        <span class="logo-icon" aria-hidden="true">&#127963;</span>
+        <span class="logo-text">Queue<span class="text-brand-400">Less</span></span>
+      </a>
 
-        <nav id="main-nav" class="main-nav" aria-label="Primary navigation">
-          <a href="#/" id="nav-home" class="nav-link" data-route="/">Home</a>
-          <a href="#/take-token" id="nav-take-token" class="nav-link" data-route="/take-token">Take Token</a>
-          <a href="#/token-status" id="nav-status" class="nav-link" data-route="/token-status">My Status</a>
-          <a href="#/b/live" id="nav-live" class="nav-link" data-route="/b/live">&#128202; Live Board</a>
-          <a href="#/admin/login" id="nav-admin" class="nav-link nav-link--admin" data-route="/admin/login">Admin &#8599;</a>
-        </nav>
-
-        <!-- Mobile hamburger -->
-        <button id="mobile-menu-btn" class="mobile-menu-btn" aria-label="Toggle navigation menu" aria-expanded="false">
-          <span class="hamburger-line"></span>
-          <span class="hamburger-line"></span>
-          <span class="hamburger-line"></span>
-        </button>
-      </div>
-
-      <!-- Mobile nav drawer -->
-      <nav id="mobile-nav" class="mobile-nav hidden" aria-label="Mobile navigation">
-        <a href="#/" id="mobile-nav-home" class="mobile-nav-link" data-route="/">Home</a>
-        <a href="#/take-token" id="mobile-nav-take-token" class="mobile-nav-link" data-route="/take-token">Take Token</a>
-        <a href="#/token-status" id="mobile-nav-status" class="mobile-nav-link" data-route="/token-status">My Status</a>
-        <a href="#/b/live" id="mobile-nav-live" class="mobile-nav-link" data-route="/b/live">&#128202; Live Board</a>
-        <a href="#/admin/login" id="mobile-nav-admin" class="mobile-nav-link mobile-nav-link--admin" data-route="/admin/login">Admin &#8599;</a>
+      <nav id="main-nav" class="main-nav" aria-label="Primary navigation">
+        <a href="#/" id="nav-home" class="nav-link" data-route="/">Home</a>
+        <a href="#/take-token" id="nav-take-token" class="nav-link" data-route="/take-token">Take Token</a>
+        <a href="#/token-status" id="nav-status" class="nav-link" data-route="/token-status">My Status</a>
+        <a href="#/b/live" id="nav-live" class="nav-link" data-route="/b/live">&#128202; Live Board</a>
+        <a href="#/admin/login" id="nav-admin" class="nav-link nav-link--admin" data-route="/admin/login">Admin
+          &#8599;</a>
       </nav>
-    </header>
 
-    <!-- ===== MAIN ROUTER OUTLET ===== -->
-    <main id="app-root" class="app-root" role="main">
-      <!-- Routes render here -->
-    </main>
+      <!-- Mobile hamburger -->
+      <button id="mobile-menu-btn" class="mobile-menu-btn" aria-label="Toggle navigation menu" aria-expanded="false">
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+      </button>
+    </div>
 
-    <!-- ===== FOOTER ===== -->
-    <footer id="app-footer" class="app-footer">
-      <div class="footer-inner">
+    <!-- Mobile nav drawer -->
+    <nav id="mobile-nav" class="mobile-nav hidden" aria-label="Mobile navigation">
+      <a href="#/" id="mobile-nav-home" class="mobile-nav-link" data-route="/">Home</a>
+      <a href="#/take-token" id="mobile-nav-take-token" class="mobile-nav-link" data-route="/take-token">Take Token</a>
+      <a href="#/token-status" id="mobile-nav-status" class="mobile-nav-link" data-route="/token-status">My Status</a>
+      <a href="#/b/live" id="mobile-nav-live" class="mobile-nav-link" data-route="/b/live">&#128202; Live Board</a>
+      <a href="#/admin/login" id="mobile-nav-admin" class="mobile-nav-link mobile-nav-link--admin"
+        data-route="/admin/login">Admin &#8599;</a>
+    </nav>
+  </header>
+
+  <!-- ===== MAIN ROUTER OUTLET ===== -->
+  <main id="app-root" class="app-root" role="main">
+    <!-- Routes render here -->
+  </main>
+
+  <!-- ===== FOOTER (DBIM-style multi-column layout) ===== -->
+  <footer id="app-footer" class="app-footer">
+    <div class="footer-inner">
+
+      <!-- Brand / title row -->
+      <div class="footer-top-row">
         <div class="footer-brand">
           <span class="logo-icon" aria-hidden="true">&#127963;</span>
-          <span class="font-semibold">QueueLess</span>
-          <span class="text-surface-muted text-sm">&#8212; Hackathon Prototype (PS2)</span>
+          <span class="footer-brand__name">QueueLess</span>
+          <span class="footer-brand__sub">&mdash; Virtual Queue System</span>
         </div>
-        <div class="footer-links">
-          <a href="#/take-token" class="footer-link">Take Token</a>
-          <a href="#/token-status" class="footer-link">Token Status</a>
-          <a href="#/admin/queue" class="footer-link">Admin Queue</a>
+      </div>
+
+      <!-- Useful Links grid (DBIM/NIC portal pattern) -->
+      <div class="footer-section-grid">
+        <div class="footer-col">
+          <div class="footer-col__heading">Useful Links</div>
+          <a href="#/take-token"          class="footer-link">Take Token</a>
+          <a href="#/token-status"         class="footer-link">Token Status</a>
+          <a href="#/b/live"              class="footer-link">Live Board</a>
+          <a href="#/admin/queue"         class="footer-link">Admin Queue</a>
           <a href="#/admin/notifications" class="footer-link">Notification Log</a>
         </div>
-        <p class="footer-legal">
-          ETA is explainable queue math, not AI prediction. Demo thresholds disclosed above.
-          &copy; 2026 QueueLess Team.
-        </p>
+        <div class="footer-col">
+          <div class="footer-col__heading">Website Policies</div>
+          <a href="#/" class="footer-link">Privacy Policy</a>
+          <a href="#/" class="footer-link">Terms of Use</a>
+          <a href="#/" class="footer-link">Accessibility Statement</a>
+          <a href="#/" class="footer-link">Sitemap</a>
+        </div>
+        <div class="footer-col">
+          <div class="footer-col__heading">Support</div>
+          <a href="#/" class="footer-link">Help &amp; FAQs</a>
+          <a href="#/" class="footer-link">Contact Us</a>
+          <a href="#/" class="footer-link">Feedback</a>
+        </div>
       </div>
-    </footer>
 
-    <!-- App scripts: engine first (state), then ui helpers, then router -->
-    <script src="assets/engine.js"></script>
-    <script src="assets/ui.js"></script>
-    <script src="assets/app.js"></script>
-  </body>
+      <!-- Ownership / Prototype notice (non-negotiable — must not be removed) -->
+      <div class="footer-ownership" role="note">
+        <strong>&#9888; Hackathon Prototype &mdash; Not an official Government website.</strong>
+        This application was built for the QueueLess hackathon challenge (PS-2) and is not affiliated with,
+        endorsed by, or associated with any ministry, department, or government authority of India or any other country.
+        ETA is explainable queue math &mdash; not AI prediction.
+        Demo thresholds: 60 s / 30 s (production thresholds would be 10 min / 5 min).
+      </div>
+
+      <!-- Legal bar -->
+      <div class="footer-legal-bar">
+        <span>&copy; 2026 QueueLess Team. All rights reserved.</span>
+        <span>Last updated: <strong>Sep 30, 2026</strong></span>
+      </div>
+
+    </div>
+  </footer>
+
+  <!-- App scripts: engine first (state), then ui helpers, then router -->
+  <script src="assets/engine.js"></script>
+  <script src="assets/ui.js"></script>
+  <script src="assets/app.js"></script>
+</body>
+
 </html>
