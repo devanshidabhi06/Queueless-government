@@ -77,6 +77,7 @@ function pageHero(title, subtitle) {
 }
 
 function badge(status) {
+  if (status === "RESERVED") return '<span class="badge badge-issued" style="background:rgba(251,191,36,0.2);color:#fbbf24;border-color:rgba(251,191,36,0.3)">Not checked-in</span>';
   return window.QL ? window.QL.badge(status) :
     '<span class="badge badge-' + status.toLowerCase() + '">' + status + '</span>';
 }
@@ -200,6 +201,14 @@ function pageTakeToken(el) {
           '<div class="form-hint">Needed for reminders. We will not share your number.</div>',
         '</div>',
 
+        '<div class="form-group" style="margin-bottom:14px">',
+          '<label class="form-label">Where are you joining from?</label>',
+          '<div style="display:flex;flex-direction:column;gap:8px">',
+            '<label class="checkbox-row"><input type="radio" name="tt-join-mode" value="ON_SITE" checked /> I&rsquo;m at the office now</label>',
+            '<label class="checkbox-row"><input type="radio" name="tt-join-mode" value="REMOTE" /> Joining from home (check-in required)</label>',
+          '</div>',
+        '</div>',
+
         '<div style="border-top:1px solid var(--color-border);padding-top:14px;margin-bottom:14px">',
           '<div style="font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--color-muted);margin-bottom:10px">Reminder preferences</div>',
           '<div style="display:flex;flex-direction:column;gap:8px">',
@@ -256,6 +265,7 @@ function pageTakeToken(el) {
       notifyWhatsApp:el.querySelector("#tt-wa").checked,
       notifySms:     el.querySelector("#tt-sms").checked,
       consentGiven:  el.querySelector("#tt-consent").checked,
+      joinMode:      el.querySelector("input[name='tt-join-mode']:checked").value,
     };
 
     var tok;
@@ -303,6 +313,7 @@ function pageTokenStatus(el) {
     }
 
     var isActive = tok.status === "ISSUED" || tok.status === "CALLED";
+    var isReserved = tok.status === "RESERVED";
     var etaPulse = isActive && tok.etaSeconds != null && tok.etaSeconds <= 60 ?
       ' style="color:#fbbf24;animation:live-ping 1.8s ease-out infinite"' : "";
 
@@ -312,6 +323,14 @@ function pageTokenStatus(el) {
           '<div style="font-size:0.65rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-muted);margin-bottom:8px">Token Number</div>',
           '<div class="ql-nums" style="font-size:3.5rem;font-weight:800;letter-spacing:-0.04em;line-height:1;color:#fff;margin-bottom:10px">' + esc(tok.tokenNumber) + '</div>',
           '<div style="display:flex;justify-content:center;gap:8px;margin-bottom:16px">' + badge(tok.status) + '</div>',
+
+          isReserved ? [
+            '<div style="background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.3);border-radius:4px;padding:12px;margin-bottom:16px;text-align:left">',
+              '<div style="font-size:0.75rem;font-weight:700;text-transform:uppercase;color:#fbbf24;margin-bottom:6px">Check-in Required</div>',
+              '<div style="font-size:0.85rem;color:var(--color-text-soft);margin-bottom:12px">This token will be eligible for calling only after you check in at the office.</div>',
+              '<div style="text-align:center"><button id="ts-checkin-btn" class="btn btn-primary btn-sm">Check In Now</button></div>',
+            '</div>',
+          ].join("") : "",
 
           isActive ? [
             '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;text-align:left">',
@@ -387,24 +406,35 @@ function pageTokenStatus(el) {
       el.querySelector("#ts-status-card").innerHTML = renderStatus(found);
       if (found) {
         sessionStorage.setItem("ql_last_id", found.id);
-        wireCancel(found.id);
+        wireActions(found.id);
       }
     });
 
-    if (tok) wireCancel(tok.id);
+    if (tok) wireActions(tok.id);
   }
 
-  function wireCancel(tokenId) {
-    var btn = el.querySelector("#ts-cancel-btn");
-    if (!btn) return;
-    btn.addEventListener("click", function() {
-      if (!confirm("Cancel token " + (Engine.getToken(tokenId)||{}).tokenNumber + "?")) return;
-      try {
-        Engine.cancel(tokenId);
-        sessionStorage.removeItem("ql_last_id");
-      } catch(err) { /* ignore */ }
-      render(null);
-    });
+  function wireActions(tokenId) {
+    var cBtn = el.querySelector("#ts-cancel-btn");
+    if (cBtn) {
+      cBtn.addEventListener("click", function() {
+        if (!confirm("Cancel token " + (Engine.getToken(tokenId)||{}).tokenNumber + "?")) return;
+        try {
+          Engine.cancel(tokenId);
+          sessionStorage.removeItem("ql_last_id");
+        } catch(err) { /* ignore */ }
+        render(null);
+      });
+    }
+
+    var chBtn = el.querySelector("#ts-checkin-btn");
+    if (chBtn) {
+      chBtn.addEventListener("click", function() {
+        try {
+          Engine.checkIn(tokenId);
+        } catch(err) { alert(err.message); }
+        render(tokenId);
+      });
+    }
   }
 
   var lastId = sessionStorage.getItem("ql_last_id");
