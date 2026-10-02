@@ -517,11 +517,25 @@ function pageAdminQueue(el) {
       var rows = queue.length ? queue.map(function(t) {
         var issuedRow = t.status === "ISSUED";
         var calledRow = t.status === "CALLED";
+
+        var counterHtml = "";
+        if (calledRow) {
+          var seq = 0;
+          var m = t.tokenNumber.match(/\d+$/);
+          if (m) {
+            seq = parseInt(m[0], 10);
+          } else {
+            for (var i = 0; i < t.id.length; i++) seq += t.id.charCodeAt(i);
+          }
+          var cNum = (seq % limit) + 1;
+          counterHtml = '<div style="margin-top:4px;font-size:0.75rem;color:var(--color-text-soft);white-space:nowrap">Proceed to Counter <span class="ql-nums" style="font-weight:700">' + cNum + '</span></div>';
+        }
+
         return [
           '<tr>',
             '<td class="ql-nums" style="font-weight:700">' + esc(t.tokenNumber) + '</td>',
             '<td style="font-size:0.82rem">' + esc(t.name || "—") + '</td>',
-            '<td>' + badge(t.status) + '</td>',
+            '<td>' + badge(t.status) + counterHtml + '</td>',
             '<td class="ql-nums">' + (t.tokensAhead != null ? t.tokensAhead : "—") + '</td>',
             '<td class="ql-nums" style="color:' + (t.etaSeconds != null && t.etaSeconds <= 30 ? "#fbbf24" : t.etaSeconds != null && t.etaSeconds <= 60 ? "#38bdf8" : "var(--color-text-soft)") + '">',
               fmtEta(t.etaSeconds),
