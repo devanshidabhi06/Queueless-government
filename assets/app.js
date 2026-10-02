@@ -1105,6 +1105,8 @@ function pageDisplay(el) {
       var nowServing = q.find(function(t) { return t.status === "CALLED"; });
       var nextUp = q.find(function(t) { return t.status === "ISSUED" && (t.joinMode === "ON_SITE" || !!t.checkedInAt); });
 
+      var reservedCount = q.filter(function(t) { return t.status === "RESERVED"; }).length;
+
       var servingText = nowServing 
         ? '<span class="ql-nums" style="font-size:2.5rem;font-weight:800;color:var(--color-text)">' + esc(nowServing.tokenNumber) + '</span>' 
         : '<span style="font-size:2.5rem;font-weight:800;color:var(--color-muted)">&mdash;</span>';
@@ -1112,6 +1114,14 @@ function pageDisplay(el) {
       var nextText = nextUp 
         ? '<span class="ql-nums" style="font-size:1.1rem;font-weight:700;color:var(--color-text-soft)">' + esc(nextUp.tokenNumber) + '</span>' 
         : '<span style="color:var(--color-muted)">&mdash;</span>';
+
+      var waitingCheckInHtml = "";
+      if (reservedCount > 0) {
+        waitingCheckInHtml = '<div style="font-size:0.8rem;color:var(--color-muted);margin-top:2px">Waiting to check in: <strong class="ql-nums" style="color:var(--color-warning)">' + reservedCount + '</strong></div>';
+        if (!nextUp) {
+          waitingCheckInHtml += '<div style="font-size:0.75rem;color:var(--color-text-soft);margin-top:4px;font-style:italic">Remote tokens must check in to be eligible.</div>';
+        }
+      }
 
       return [
         '<div class="card card--glow" style="display:flex;flex-direction:column;gap:12px;text-align:center">',
@@ -1121,9 +1131,12 @@ function pageDisplay(el) {
             '<div style="font-size:0.8rem;font-weight:700;letter-spacing:0.1em;color:var(--color-success);text-transform:uppercase;margin-bottom:8px">Now Serving</div>',
             servingText,
           '</div>',
-          '<div style="display:flex;align-items:center;justify-content:center;gap:8px;font-size:0.9rem">',
-            '<span style="color:var(--color-muted);text-transform:uppercase;letter-spacing:0.05em">Next Up:</span>',
-            nextText,
+          '<div style="display:flex;flex-direction:column;gap:4px">',
+            '<div style="display:flex;align-items:center;justify-content:center;gap:8px;font-size:0.9rem">',
+              '<span style="color:var(--color-muted);text-transform:uppercase;letter-spacing:0.05em">Next Up:</span>',
+              nextText,
+            '</div>',
+            waitingCheckInHtml,
           '</div>',
         '</div>'
       ].join("");
