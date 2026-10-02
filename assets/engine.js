@@ -351,7 +351,21 @@
    * @returns enriched token, or null if queue is empty.
    */
   Engine.callNext = function (serviceId) {
+    var svc = STATE.services.find(function(s) { return s.id === serviceId; });
+    var counters = 1;
+    if (svc) {
+      var c = (svc.counters != null) ? svc.counters : svc.activeCounters;
+      c = Number(c);
+      if (Number.isFinite(c) && c > 0) counters = Math.floor(c);
+    }
+
     var q = activeQueue(serviceId);
+    var calledCount = q.filter(function(t) { return t.status === "CALLED"; }).length;
+
+    if (calledCount >= counters) {
+      throw new Error("All counters are busy. Please mark a called token as Served/No-Show/Unable to process before calling next.");
+    }
+
     var issued = q.filter(function(t) { return t.status === "ISSUED" && t.checkedInAt; });
     if (!issued.length) {
       var reserved = q.filter(function(t) { return t.status === "RESERVED"; });
