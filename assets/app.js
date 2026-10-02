@@ -511,6 +511,7 @@ function pageAdminQueue(el) {
       var c = (svc.counters != null) ? svc.counters : svc.activeCounters;
       var limit = (Number.isFinite(Number(c)) && Number(c) > 0) ? Math.floor(Number(c)) : 1;
       var calledCount = queue.filter(function(t) { return t.status === "CALLED"; }).length;
+      var reservedCount = queue.filter(function(t) { return t.status === "RESERVED"; }).length;
       var busy = calledCount >= limit;
 
       var rows = queue.length ? queue.map(function(t) {
@@ -542,7 +543,14 @@ function pageAdminQueue(el) {
       return [
         '<section class="ql-section" style="margin-bottom:16px">',
           '<div class="ql-section__header">',
-            '<h2 class="ql-section__title">' + esc(svc.name) + '</h2>',
+            '<div>',
+              '<h2 class="ql-section__title" style="margin-bottom:4px">' + esc(svc.name) + '</h2>',
+              '<div style="font-size:0.75rem;color:var(--color-text-soft);display:flex;flex-wrap:wrap;gap:4px 8px">',
+                '<span>Counters busy: <span class="ql-nums" style="font-weight:600">' + calledCount + '/' + limit + '</span></span>',
+                '<span style="opacity:0.3;display:none" class="aq-kpi-divider">|</span>',
+                '<span>Waiting to check in: <span class="ql-nums" style="font-weight:600">' + reservedCount + '</span></span>',
+              '</div>',
+            '</div>',
             '<div class="ql-section__actions">',
               // Counter control
               '<div style="display:flex;align-items:center;gap:6px;font-size:0.82rem">',
