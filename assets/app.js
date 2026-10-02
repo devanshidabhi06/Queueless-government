@@ -31,6 +31,7 @@ var ROUTES = {
   "/admin/queue":         pageAdminQueue,
   "/admin/notifications": pageAdminNotifications,
   "/b/live":              pageDirectionBLive,
+  "/display":             pageDisplay,
 };
 
 /* ================================================================
@@ -1082,6 +1083,103 @@ function pageDirectionBLive(el) {
       form.reset();
     }, 500);
   });
+}
+
+/* ================================================================
+   PUBLIC DISPLAY BOARD
+================================================================ */
+function pageDisplay(el) {
+  var timerId = null;
+
+  function render() {
+    if (getRoute() !== "/display") {
+      clearInterval(timerId);
+      return;
+    }
+
+    var state = Engine.getState();
+    var svcs = Engine.getOffices()[0] ? Engine.getServices(Engine.getOffices()[0].id) : [];
+    
+    var cardsHtml = svcs.map(function(s) {
+      var q = Engine.getQueue(s.id);
+      var nowServing = q.find(function(t) { return t.status === "CALLED"; });
+      var nextUp = q.find(function(t) { return t.status === "ISSUED" && (t.joinMode === "ON_SITE" || !!t.checkedInAt); });
+
+      var servingText = nowServing 
+        ? '<span class="ql-nums" style="font-size:2.5rem;font-weight:800;color:var(--color-text)">' + esc(nowServing.tokenNumber) + '</span>' 
+        : '<span style="font-size:2.5rem;font-weight:800;color:var(--color-muted)">&mdash;</span>';
+      
+      var nextText = nextUp 
+        ? '<span class="ql-nums" style="font-size:1.1rem;font-weight:700;color:var(--color-text-soft)">' + esc(nextUp.tokenNumber) + '</span>' 
+        : '<span style="color:var(--color-muted)">&mdash;</span>';
+
+      return [
+        '<div class="card card--glow" style="display:flex;flex-direction:column;gap:12px;text-align:center">',
+          '<div style="font-size:1.1rem;font-weight:700;color:var(--color-brand);text-transform:uppercase;letter-spacing:0.05em">' + esc(s.name) + '</div>',
+          '<div style="font-size:0.8rem;color:var(--color-text-soft);text-transform:uppercase;letter-spacing:0.05em">Counters Open: <strong class="ql-nums" style="color:var(--color-text)">' + s.activeCounters + '</strong></div>',
+          '<div style="background:rgba(255,255,255,0.03);border-radius:var(--radius-lg);padding:24px 16px;margin:8px 0;border:1px solid rgba(255,255,255,0.05)">',
+            '<div style="font-size:0.8rem;font-weight:700;letter-spacing:0.1em;color:var(--color-success);text-transform:uppercase;margin-bottom:8px">Now Serving</div>',
+            servingText,
+          '</div>',
+          '<div style="display:flex;align-items:center;justify-content:center;gap:8px;font-size:0.9rem">',
+            '<span style="color:var(--color-muted);text-transform:uppercase;letter-spacing:0.05em">Next Up:</span>',
+            nextText,
+          '</div>',
+        '</div>'
+      ].join("");
+    }).join("");
+
+    var recent = state.tokens
+      .filter(function(t) { return t.calledAt != null; })
+      .sort(function(a, b) { return new Date(b.calledAt) - new Date(a.calledAt); })
+      .slice(0, 5);
+
+    var recentHtml = recent.length === 0 
+      ? '<div style="color:var(--color-muted);font-size:0.9rem;text-align:center;padding:24px 0">No tokens called recently.</div>'
+      : recent.map(function(t) {
+          var s = svcs.find(function(x) { return x.id === t.serviceId; });
+          var sName = s ? s.name : "Unknown";
+          return [
+            '<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--color-border);background:rgba(255,255,255,0.01)">',
+              '<div style="display:flex;align-items:center;gap:12px">',
+                '<span class="ql-nums" style="font-size:1.1rem;font-weight:700;color:var(--color-text)">' + esc(t.tokenNumber) + '</span>',
+                badge(t.status),
+              '</div>',
+              '<div style="text-align:right">',
+                '<div style="font-size:0.85rem;font-weight:600;color:var(--color-text-soft)">' + esc(sName) + '</div>',
+                '<div class="ql-nums" style="font-size:0.75rem;color:var(--color-muted)">Called: ' + fmtTime(t.calledAt) + '</div>',
+              '</div>',
+            '</div>'
+          ].join("");
+        }).join("");
+
+    el.innerHTML = [
+      '<div class="ql-pagehead" style="text-align:center;margin-bottom:32px">',
+        '<h1 class="ql-pagehead__title" style="font-size:clamp(1.75rem, 5vw, 2.5rem);margin-bottom:8px">Live Queue Display</h1>',
+        '<p class="ql-pagehead__subtitle" style="margin:0 auto;font-size:1rem;color:var(--color-brand)">Please proceed to the counter when your token is called.</p>',
+      '</div>',
+      
+      '<div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:24px;margin-bottom:48px">',
+        cardsHtml,
+      '</div>',
+
+      '<div class="ql-section" style="max-width:800px;margin:0 auto 40px auto">',
+        '<div class="ql-section__header">',
+          '<h2 class="ql-section__title">Recently Called</h2>',
+        '</div>',
+        '<div class="ql-section__body" style="padding:0">',
+          recentHtml,
+        '</div>',
+      '</div>',
+      
+      '<div style="text-align:center;font-size:0.8rem;color:var(--color-muted);padding:24px 0;border-top:1px solid var(--color-border)">',
+        '<strong>&#9888; Hackathon Prototype &mdash; Not an official Government website.</strong>',
+      '</div>'
+    ].join("");
+  }
+
+  render();
+  timerId = setInterval(render, 1500);
 }
 
 /* ================================================================
