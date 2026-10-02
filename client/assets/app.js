@@ -1107,9 +1107,22 @@ function pageDisplay(el) {
 
       var reservedCount = q.filter(function(t) { return t.status === "RESERVED"; }).length;
 
-      var servingText = nowServing 
-        ? '<span class="ql-nums" style="font-size:2.5rem;font-weight:800;color:var(--color-text)">' + esc(nowServing.tokenNumber) + '</span>' 
-        : '<span style="font-size:2.5rem;font-weight:800;color:var(--color-muted)">&mdash;</span>';
+      var servingText = '<span style="font-size:2.5rem;font-weight:800;color:var(--color-muted)">&mdash;</span>';
+      var counterHtml = "";
+      if (nowServing) {
+        servingText = '<span class="ql-nums" style="font-size:2.5rem;font-weight:800;color:var(--color-text)">' + esc(nowServing.tokenNumber) + '</span>';
+        if (s.activeCounters >= 1) {
+          var seq = 0;
+          var m = nowServing.tokenNumber.match(/\d+$/);
+          if (m) {
+            seq = parseInt(m[0], 10);
+          } else {
+            for (var i = 0; i < nowServing.id.length; i++) seq += nowServing.id.charCodeAt(i);
+          }
+          var cNum = (seq % s.activeCounters) + 1;
+          counterHtml = '<div style="margin-top:8px;font-size:0.95rem;color:var(--color-text-soft)">Proceed to Counter <strong class="ql-nums" style="color:var(--color-text)">' + cNum + '</strong></div>';
+        }
+      }
       
       var nextText = nextUp 
         ? '<span class="ql-nums" style="font-size:1.1rem;font-weight:700;color:var(--color-text-soft)">' + esc(nextUp.tokenNumber) + '</span>' 
@@ -1130,6 +1143,7 @@ function pageDisplay(el) {
           '<div style="background:rgba(255,255,255,0.03);border-radius:var(--radius-lg);padding:24px 16px;margin:8px 0;border:1px solid rgba(255,255,255,0.05)">',
             '<div style="font-size:0.8rem;font-weight:700;letter-spacing:0.1em;color:var(--color-success);text-transform:uppercase;margin-bottom:8px">Now Serving</div>',
             servingText,
+            counterHtml,
           '</div>',
           '<div style="display:flex;flex-direction:column;gap:4px">',
             '<div style="display:flex;align-items:center;justify-content:center;gap:8px;font-size:0.9rem">',
