@@ -213,6 +213,8 @@
         createdAt:        new Date(base - (SEED_SPECS.length - i) * 3500),
         calledAt:         null,
         servedAt:         null,
+        outcomeReason:    null,
+        outcomeAt:        null,
       };
       STATE.tokens.push(tok);
       audit("TOKEN_ISSUED", tok.id, "system:seed");
@@ -314,6 +316,8 @@
       createdAt:        now(),
       calledAt:         null,
       servedAt:         null,
+      outcomeReason:    null,
+      outcomeAt:        null,
     };
     STATE.tokens.push(tok);
     audit("TOKEN_ISSUED", tok.id, "citizen");
@@ -377,6 +381,19 @@
     if (!t) throw new Error("Token not found.");
     t.status = "NO_SHOW";
     audit("TOKEN_NO_SHOW", tokenId, "admin");
+    return enrich(t);
+  };
+
+  /** Mark a token as UNABLE_TO_PROCESS (admin-initiated) */
+  Engine.unableToProcess = function (tokenIdOrNumber, reason) {
+    var str = String(tokenIdOrNumber).trim();
+    var t = STATE.tokens.find(function(tok) { return tok.id === str || tok.tokenNumber === str.toUpperCase(); });
+    if (!t) throw new Error("Token not found.");
+    t.status = "UNABLE_TO_PROCESS";
+    t.outcomeReason = reason || "Other";
+    t.outcomeAt = now();
+    var masked = t.phone.length > 4 ? "****" + t.phone.slice(-4) : "****";
+    audit("TOKEN_UNABLE_TO_PROCESS", t.id, "admin", { notes: "Reason: " + t.outcomeReason + " (Phone: " + masked + ")" });
     return enrich(t);
   };
 
