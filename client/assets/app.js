@@ -508,6 +508,11 @@ function pageAdminQueue(el) {
       var queue = g.queue;
       var issued = queue.filter(function(t) { return t.status === "ISSUED"; });
 
+      var c = (svc.counters != null) ? svc.counters : svc.activeCounters;
+      var limit = (Number.isFinite(Number(c)) && Number(c) > 0) ? Math.floor(Number(c)) : 1;
+      var calledCount = queue.filter(function(t) { return t.status === "CALLED"; }).length;
+      var busy = calledCount >= limit;
+
       var rows = queue.length ? queue.map(function(t) {
         var issuedRow = t.status === "ISSUED";
         var calledRow = t.status === "CALLED";
@@ -546,9 +551,14 @@ function pageAdminQueue(el) {
                 '<button class="btn btn-secondary btn-sm aq-counter-plus" data-svc="' + svc.id + '">&#43;</button>',
                 '<span style="color:var(--color-muted)">counter' + (svc.activeCounters !== 1 ? "s" : "") + '</span>',
               '</div>',
-              issued.length > 0 ?
-                '<button class="btn btn-primary btn-sm aq-call-next" data-svc="' + svc.id + '">&#128221; Call Next</button>' :
-                '<span style="font-size:0.78rem;color:var(--color-muted)">No tokens waiting</span>',
+              '<div style="display:flex;flex-direction:column;align-items:flex-end">',
+                issued.length > 0 ?
+                  (busy
+                    ? '<button class="btn btn-primary btn-sm aq-call-next" data-svc="' + svc.id + '" disabled>&#128221; Call Next</button>'
+                    : '<button class="btn btn-primary btn-sm aq-call-next" data-svc="' + svc.id + '">&#128221; Call Next</button>')
+                  : '<span style="font-size:0.78rem;color:var(--color-muted)">No tokens waiting</span>',
+                (issued.length > 0 && busy) ? '<div style="font-size:0.75rem;color:var(--color-text-soft);margin-top:4px;max-width:280px;text-align:right;line-height:1.2">All counters are busy. Mark a called token as Served/No-Show/Unable to process to free a counter.</div>' : '',
+              '</div>',
             '</div>',
           '</div>',
           '<div style="overflow-x:auto">',
