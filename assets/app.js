@@ -217,7 +217,10 @@ function pageTakeToken(el) {
             '<label class="checkbox-row"><input type="checkbox" id="tt-sms" /> SMS reminders</label>',
             '<label class="checkbox-row"><input type="checkbox" id="tt-consent" required /> I consent to receive reminder messages on the above number</label>',
           '</div>',
-          '<div class="form-hint" style="margin-top:6px">Demo thresholds: 60 s and 30 s before your turn (production: 10 min / 5 min).</div>',
+          '<div class="form-hint" style="margin-top:6px">',
+            '<p style="font-size:0.75rem;margin-bottom:4px;line-height:1.4">By providing your mobile number, you consent to receive queue reminders via WhatsApp or SMS. Message frequency depends on queue activity. Reply STOP to unsubscribe at any time. Standard message rates may apply.</p>',
+            '<p style="font-size:0.75rem;margin-bottom:0">Demo mode: reminder triggers use 60 s / 30 s for judging; production would use 10 min / 5 min.</p>',
+          '</div>',
         '</div>',
 
         '<div id="tt-result" style="margin-bottom:12px"></div>',
