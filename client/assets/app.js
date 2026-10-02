@@ -546,7 +546,7 @@ function pageAdminQueue(el) {
                 '<button class="btn btn-success btn-sm aq-serve" data-id="' + t.id + '" style="margin-right:4px">Served</button>',
                 '<button class="btn btn-warning btn-sm aq-noshow" data-id="' + t.id + '" style="margin-right:4px">No-Show</button>',
                 '<button class="btn btn-danger btn-sm aq-unable" data-id="' + t.id + '">Unable...</button>',
-              ].join("") : "",
+              ].join("") : (t.status === "NO_SHOW" ? '<button class="btn btn-primary btn-sm aq-recall" data-id="' + t.id + '">&#8635; Recall (Demo)</button>' : ""),
             '</td>',
           '</tr>',
         ].join("");
@@ -681,6 +681,18 @@ function pageAdminQueue(el) {
         Engine.noShow(btn.dataset.id);
         Engine.runReminderCheck();
         render();
+      });
+    });
+
+    el.querySelectorAll(".aq-recall").forEach(function(btn) {
+      btn.addEventListener("click", function() {
+        try {
+          Engine.recall(btn.dataset.id);
+          Engine.runReminderCheck();
+          render();
+        } catch(e) {
+          alert(e.message);
+        }
       });
     });
 

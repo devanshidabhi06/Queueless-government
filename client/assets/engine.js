@@ -215,6 +215,8 @@
         servedAt:         null,
         outcomeReason:    null,
         outcomeAt:        null,
+        noShowAt:         null,
+        recallCount:      0,
       };
       STATE.tokens.push(tok);
       audit("TOKEN_ISSUED", tok.id, "system:seed");
@@ -244,9 +246,16 @@
     return STATE.services.filter(function(s) { return !officeId || s.officeId === officeId; });
   };
 
-  /** Enriched queue for a service (ISSUED + CALLED, sorted oldest-first) */
+  /** Enriched queue for a service (ISSUED + CALLED + recallable NO_SHOW) */
   Engine.getQueue = function (serviceId) {
-    return activeQueue(serviceId).map(enrich);
+    var active = activeQueue(serviceId).map(enrich);
+    var recallable = STATE.tokens.filter(function(t) {
+      return t.serviceId === serviceId && 
+             t.status === "NO_SHOW" && 
+             (t.recallCount || 0) < 1 && 
+             t.noShowAt && (now().getTime() - t.noShowAt.getTime() <= 60000);
+    }).map(enrich);
+    return active.concat(recallable);
   };
 
   /** All queues grouped by service */
@@ -318,6 +327,8 @@
       servedAt:         null,
       outcomeReason:    null,
       outcomeAt:        null,
+      noShowAt:         null,
+      recallCount:      0,
     };
     STATE.tokens.push(tok);
     audit("TOKEN_ISSUED", tok.id, "citizen");
@@ -394,7 +405,39 @@
     var t = STATE.tokens.find(function(t) { return t.id === tokenId; });
     if (!t) throw new Error("Token not found.");
     t.status = "NO_SHOW";
+    t.noShowAt = now();
     audit("TOKEN_NO_SHOW", tokenId, "admin");
+    return enrich(t);
+  };
+
+  /** Recall a NO_SHOW token within the demo window */
+  Engine.recall = function (tokenIdOrNumber) {
+    var str = String(tokenIdOrNumber).trim();
+    var t = STATE.tokens.find(function(t) { return t.id === str || t.tokenNumber === str; });
+    if (!t) throw new Error("Token not found.");
+    if (t.status !== "NO_SHOW") throw new Error("Token is not in NO_SHOW status.");
+    if (t.recallCount >= 1) throw new Error("Token has already been recalled once.");
+    if (!t.noShowAt || (now().getTime() - t.noShowAt.getTime() > 60000)) {
+      throw new Error("Recall window (60s demo) has expired.");
+    }
+
+    var svc = STATE.services.find(function(s) { return s.id === t.serviceId; });
+    var counters = 1;
+    if (svc) {
+      var c = (svc.counters != null) ? svc.counters : svc.activeCounters;
+      c = Number(c);
+      if (Number.isFinite(c) && c > 0) counters = Math.floor(c);
+    }
+    var q = activeQueue(t.serviceId);
+    var calledCount = q.filter(function(tk) { return tk.status === "CALLED"; }).length;
+    if (calledCount >= counters) {
+      throw new Error("All counters are busy. Please mark a called token as Served/No-Show/Unable to process before recalling.");
+    }
+
+    t.status = "CALLED";
+    t.calledAt = now();
+    t.recallCount = (t.recallCount || 0) + 1;
+    audit("TOKEN_RECALLED", t.id, "admin");
     return enrich(t);
   };
 
