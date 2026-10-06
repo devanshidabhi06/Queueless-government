@@ -1271,10 +1271,10 @@ function pageDisplay(el) {
 
       var reservedCount = q.filter(function (t) { return t.status === "RESERVED"; }).length;
 
-      var servingText = '<span style="font-size:2.5rem;font-weight:800;color:var(--color-muted)">&mdash;</span>';
+      var servingText = '<span style="font-size:5rem;line-height:1;font-weight:800;color:var(--color-muted)">&mdash;</span>';
       var counterHtml = "";
       if (nowServing) {
-        servingText = '<span class="ql-nums" style="font-size:2.5rem;font-weight:800;color:var(--color-text)">' + esc(nowServing.tokenNumber) + '</span>';
+        servingText = '<span class="ql-nums" style="font-size:5.5rem;line-height:1;font-weight:800;color:var(--color-text)">' + esc(nowServing.tokenNumber) + '</span>';
         if (s.activeCounters >= 1) {
           var seq = 0;
           var m = nowServing.tokenNumber.match(/\d+$/);
@@ -1284,7 +1284,7 @@ function pageDisplay(el) {
             for (var i = 0; i < nowServing.id.length; i++) seq += nowServing.id.charCodeAt(i);
           }
           var cNum = (seq % s.activeCounters) + 1;
-          counterHtml = '<div style="margin-top:8px;font-size:0.95rem;color:var(--color-text-soft)">Proceed to Counter <strong class="ql-nums" style="color:var(--color-text)">' + cNum + '</strong></div>';
+          counterHtml = '<div style="margin-top:16px;font-size:1.5rem;font-weight:600;color:var(--color-text-soft)">Proceed to Counter <strong class="ql-nums" style="color:var(--color-text);font-size:2rem">' + cNum + '</strong></div>';
         }
       }
 
@@ -1301,11 +1301,11 @@ function pageDisplay(el) {
       }
 
       return [
-        '<div class="card card--glow" style="display:flex;flex-direction:column;gap:12px;text-align:center">',
-        '<div style="font-size:1.1rem;font-weight:700;color:var(--color-brand);text-transform:uppercase;letter-spacing:0.05em">' + esc(s.name) + '</div>',
-        '<div style="font-size:0.8rem;color:var(--color-text-soft);text-transform:uppercase;letter-spacing:0.05em">Counters Open: <strong class="ql-nums" style="color:var(--color-text)">' + s.activeCounters + '</strong></div>',
-        '<div style="background:rgba(255,255,255,0.03);border-radius:var(--radius-lg);padding:24px 16px;margin:8px 0;border:1px solid rgba(255,255,255,0.05)">',
-        '<div style="font-size:0.8rem;font-weight:700;letter-spacing:0.1em;color:var(--color-success);text-transform:uppercase;margin-bottom:8px">Now Serving</div>',
+        '<div class="card card--glow" style="display:flex;flex-direction:column;gap:12px;text-align:center;padding:24px;border:2px solid var(--color-border)">',
+        '<div style="font-size:1.5rem;font-weight:800;color:var(--color-text);text-transform:uppercase;letter-spacing:0.05em">' + esc(s.name) + '</div>',
+        '<div style="font-size:1rem;color:var(--color-text-soft);text-transform:uppercase;letter-spacing:0.05em">Counters Open: <strong class="ql-nums" style="color:var(--color-text)">' + s.activeCounters + '</strong></div>',
+        '<div style="background:var(--color-bg);border-radius:var(--radius-lg);padding:32px 16px;margin:16px 0;border:2px solid var(--color-border);box-shadow:0 10px 20px rgba(0,0,0,0.1)">',
+        '<div style="font-size:1.2rem;font-weight:800;letter-spacing:0.1em;color:var(--color-success);text-transform:uppercase;margin-bottom:12px">Now Serving</div>',
         servingText,
         counterHtml,
         '</div>',
@@ -1331,14 +1331,14 @@ function pageDisplay(el) {
         var s = svcs.find(function (x) { return x.id === t.serviceId; });
         var sName = s ? s.name : "Unknown";
         return [
-          '<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--color-border);background:rgba(255,255,255,0.01)">',
-          '<div style="display:flex;align-items:center;gap:12px">',
-          '<span class="ql-nums" style="font-size:1.1rem;font-weight:700;color:var(--color-text)">' + esc(t.tokenNumber) + '</span>',
+          '<div style="display:flex;align-items:center;justify-content:space-between;padding:16px 24px;border-bottom:1px solid var(--color-border);background:var(--color-bg)">',
+          '<div style="display:flex;align-items:center;gap:16px">',
+          '<span class="ql-nums" style="font-size:1.5rem;font-weight:700;color:var(--color-text)">' + esc(t.tokenNumber) + '</span>',
           badge(t.status),
           '</div>',
           '<div style="text-align:right">',
-          '<div style="font-size:0.85rem;font-weight:600;color:var(--color-text-soft)">' + esc(sName) + '</div>',
-          '<div class="ql-nums" style="font-size:0.75rem;color:var(--color-muted)">Called: ' + fmtTime(t.calledAt) + '</div>',
+          '<div style="font-size:1.1rem;font-weight:600;color:var(--color-text-soft)">' + esc(sName) + '</div>',
+          '<div class="ql-nums" style="font-size:0.9rem;color:var(--color-muted)">Called: ' + fmtTime(t.calledAt) + '</div>',
           '</div>',
           '</div>'
         ].join("");
@@ -1350,13 +1350,13 @@ function pageDisplay(el) {
       '<p class="ql-pagehead__subtitle" style="margin:0 auto;font-size:1rem;color:var(--color-brand)">Please proceed to the counter when your token is called.</p>',
       '</div>',
 
-      '<div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:24px;margin-bottom:48px">',
+      '<div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(400px, 1fr));gap:32px;margin-bottom:48px;max-width:1400px;margin-left:auto;margin-right:auto">',
       cardsHtml,
       '</div>',
 
-      '<div class="ql-section" style="max-width:800px;margin:0 auto 40px auto">',
-      '<div class="ql-section__header">',
-      '<h2 class="ql-section__title">Recently Called</h2>',
+      '<div class="ql-section" style="max-width:1400px;margin:0 auto 40px auto;border:2px solid var(--color-border);background:var(--color-card)">',
+      '<div class="ql-section__header" style="border-bottom:2px solid var(--color-border)">',
+      '<h2 class="ql-section__title" style="font-size:1.5rem">Recently Called</h2>',
       '</div>',
       '<div class="ql-section__body" style="padding:0">',
       recentHtml,
