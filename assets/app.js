@@ -246,7 +246,7 @@ function pageHome(el) {
     '</p>',
     '<div style="display:flex;gap:16px;flex-wrap:wrap">',
     '<a href="#/take-token" class="ux4g-btn ux4g-btn-outline-neutral ux4g-btn-l" style="background:#ffffff;color:var(--color-brand);border-color:#ffffff">Take a token</a>',
-    '<a href="#/token-status" class="ux4g-btn ux4g-btn-outline-neutral ux4g-btn-l" style="color:#ffffff;border-color:rgba(255,255,255,0.3)">Check token status</a>',
+    '<a href="#/token-status" class="ux4g-btn ux4g-btn-outline-neutral ux4g-btn-l" style="background:transparent;color:#ffffff;border-color:rgba(255,255,255,0.5)">Check token status</a>',
     '</div>',
     '</div>',
 
