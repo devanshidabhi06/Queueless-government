@@ -1550,3 +1550,88 @@ html.tw-high-contrast .blive-transparency  { background: #000; border-color: #ff
     border-top: none !important;
   }
 }
+
+/* ── Phase 0.60: Status Tracker ─────────────────────────────────── */
+.tw-status-tracker {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+  position: relative;
+  max-width: 500px;
+  padding: 0 20px;
+}
+
+.tw-status-tracker::before {
+  content: "";
+  position: absolute;
+  top: 16px;
+  left: 40px;
+  right: 40px;
+  height: 2px;
+  background: var(--color-border);
+  z-index: 1;
+}
+
+.tw-status-tracker__node {
+  position: relative;
+  z-index: 2;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 14px;
+  background: var(--color-bg);
+  border: 2px solid var(--color-border);
+  color: var(--color-muted);
+}
+
+.tw-status-tracker__label {
+  margin-top: 8px;
+  font-size: 0.75rem;
+  text-align: center;
+  max-width: 60px;
+  line-height: 1.3;
+  font-weight: 600;
+  color: var(--color-muted);
+}
+
+.tw-status-tracker__item.is-completed .tw-status-tracker__node {
+  border-color: var(--color-brand);
+  color: var(--color-brand);
+}
+.tw-status-tracker__item.is-completed .tw-status-tracker__label {
+  color: var(--color-text);
+}
+
+.tw-status-tracker__item.is-current .tw-status-tracker__node {
+  border: 4px solid var(--color-brand);
+  color: var(--color-brand);
+}
+.tw-status-tracker__item.is-current .tw-status-tracker__label {
+  color: var(--color-text);
+  font-weight: 800;
+}
+
+html.tw-high-contrast .tw-status-tracker::before {
+  background: #fff;
+}
+html.tw-high-contrast .tw-status-tracker__node {
+  background: #000;
+  border-color: #fff;
+  color: #fff;
+}
+html.tw-high-contrast .tw-status-tracker__label {
+  color: #fff;
+}
+html.tw-high-contrast .tw-status-tracker__item.is-completed .tw-status-tracker__node,
+html.tw-high-contrast .tw-status-tracker__item.is-current .tw-status-tracker__node {
+  border-color: #ff0;
+  color: #ff0;
+}
+html.tw-high-contrast .tw-status-tracker__item.is-current .tw-status-tracker__node {
+  border-width: 4px;
+}
