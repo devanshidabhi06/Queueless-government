@@ -575,7 +575,7 @@ function pageTokenStatus(el) {
     var currentStep = 1;
     if (tok.status === "CALLED") {
       currentStep = 2;
-    } else if (tok.status === "SERVED") {
+    } else if (tok.status === "DONE") {
       currentStep = 3;
     } else if (tok.status === "CANCELLED" || tok.status === "NO_SHOW" || tok.status === "UNABLE_TO_PROCESS") {
       currentStep = 3;
