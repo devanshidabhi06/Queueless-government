@@ -406,10 +406,10 @@ function pageTokenStatus(el) {
       ' style="color:#fbbf24;animation:live-ping 1.8s ease-out infinite"' : "";
 
     return [
-      '<div class="card" style="max-width:500px">',
+      '<div class="card" style="max-width:500px;background:var(--color-card);border:1px solid var(--color-border);box-shadow:var(--shadow-card)">',
       '<div style="text-align:center;padding:16px 8px 20px">',
       '<div style="font-size:0.65rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-muted);margin-bottom:8px">Token Number</div>',
-      '<div class="ql-nums" style="font-size:3.5rem;font-weight:800;letter-spacing:-0.04em;line-height:1;color:#fff;margin-bottom:10px">' + esc(tok.tokenNumber) + '</div>',
+      '<div class="ql-nums" style="font-size:3.5rem;font-weight:800;letter-spacing:-0.04em;line-height:1;color:var(--color-text);margin-bottom:10px">' + esc(tok.tokenNumber) + '</div>',
       '<div style="display:flex;justify-content:center;gap:8px;margin-bottom:16px">' + badge(tok.status) + '</div>',
 
       isUnable ? [
@@ -420,22 +420,22 @@ function pageTokenStatus(el) {
       ].join("") : "",
 
       isReserved ? [
-        '<div style="background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.3);border-radius:4px;padding:12px;margin-bottom:16px;text-align:left">',
-        '<div style="font-size:0.75rem;font-weight:700;text-transform:uppercase;color:#fbbf24;margin-bottom:6px">Check-in Required</div>',
+        '<div style="background:var(--color-bg);border:1px solid var(--color-warning);border-radius:4px;padding:12px;margin-bottom:16px;text-align:left">',
+        '<div style="font-size:0.75rem;font-weight:700;text-transform:uppercase;color:var(--color-warning);margin-bottom:6px">Check-in Required</div>',
         '<div style="font-size:0.85rem;color:var(--color-text-soft);margin-bottom:12px">This token will be eligible for calling only after you check in at the office.</div>',
-        '<div style="text-align:center"><button id="ts-checkin-btn" class="btn btn-primary btn-sm">Check In Now</button></div>',
+        '<div style="text-align:center"><button id="ts-checkin-btn" class="ux4g-btn ux4g-btn-primary ux4g-btn-m">Check In Now</button></div>',
         '</div>',
       ].join("") : "",
 
       isActive ? [
         '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;text-align:left">',
-        '<div class="card" style="padding:12px">',
+        '<div class="card" style="padding:12px;background:var(--color-bg);border:1px solid var(--color-border)">',
         '<div style="font-size:0.65rem;text-transform:uppercase;letter-spacing:0.07em;color:var(--color-muted);margin-bottom:4px">Tokens Ahead</div>',
         '<div class="ql-nums" style="font-size:1.8rem;font-weight:700;color:var(--color-accent)">' + tok.tokensAhead + '</div>',
         '</div>',
-        '<div class="card" style="padding:12px">',
+        '<div class="card" style="padding:12px;background:var(--color-bg);border:1px solid var(--color-border)">',
         '<div style="font-size:0.65rem;text-transform:uppercase;letter-spacing:0.07em;color:var(--color-muted);margin-bottom:4px">Est. Wait</div>',
-        '<div class="ql-nums" style="font-size:1.8rem;font-weight:700' + (etaPulse ? ';color:#fbbf24' : '') + '">' + fmtEta(tok.etaSeconds) + '</div>',
+        '<div class="ql-nums" style="font-size:1.8rem;font-weight:700' + (etaPulse ? ';color:var(--color-warning)' : ';color:var(--color-text)') + '">' + fmtEta(tok.etaSeconds) + '</div>',
         '</div>',
         '</div>',
       ].join("") : "",
@@ -450,7 +450,7 @@ function pageTokenStatus(el) {
         var allSvcs = Engine.getServices(tok.officeId || "off-001");
         var svc = allSvcs.filter(function (x) { return x.id === tok.serviceId; })[0];
         if (svc && svc.requirements && svc.requirements.length > 0) {
-          var h = '<div class="ql-section" style="margin-top:16px;padding:12px;background:rgba(255,255,255,0.03);border-color:var(--color-border);text-align:left">';
+          var h = '<div class="ql-section" style="margin-top:16px;padding:12px;background:var(--color-bg);border-color:var(--color-border);text-align:left">';
           h += '<div style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--color-muted);margin-bottom:8px">Documents Required (Demo)</div>';
           h += '<ul style="margin:0;padding-left:20px;font-size:0.8rem;color:var(--color-text-soft)">';
           svc.requirements.forEach(function (r) { h += '<li style="margin-bottom:4px">' + esc(r) + '</li>'; });
@@ -464,7 +464,7 @@ function pageTokenStatus(el) {
 
       isActive ? [
         '<div style="border-top:1px solid var(--color-border);padding:12px;text-align:center">',
-        '<button id="ts-cancel-btn" class="btn btn-danger btn-sm">Cancel My Token</button>',
+        '<button id="ts-cancel-btn" class="btn btn-secondary btn-sm" style="color:var(--color-danger);border-color:var(--color-danger)">Cancel My Token</button>',
         '</div>',
       ].join("") : "",
       '</div>',
@@ -482,8 +482,8 @@ function pageTokenStatus(el) {
       '<div class="ql-section__header"><h2 class="ql-section__title">Look up a token</h2></div>',
       '<div class="ql-section__body">',
       '<form id="ts-lookup-form" style="display:flex;gap:8px;flex-wrap:wrap">',
-      '<input class="form-input" id="ts-lookup-input" type="text" placeholder="TW-0001" style="flex:1;min-width:120px" />',
-      '<button type="submit" class="btn btn-primary">Look Up</button>',
+      '<input class="ux4g-input ux4g-input-m" id="ts-lookup-input" type="text" placeholder="TW-0001" style="flex:1;min-width:120px" />',
+      '<button type="submit" class="ux4g-btn ux4g-btn-primary ux4g-btn-m">Look Up</button>',
       '</form>',
       '</div>',
       '</div>',
