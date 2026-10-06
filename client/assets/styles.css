@@ -70,6 +70,9 @@ html[data-theme="light"]:not(.tw-high-contrast) {
   --color-text: #0f172a;
   --color-text-soft: #475569;
   --color-border: #e2e8f0;
+  --color-danger: #b91c1c;
+  --color-warning: #92400e;
+  --color-success: #15803d;
 }
 
 html[data-theme="light"]:not(.tw-high-contrast) #app-root .bg-slate-800,

@@ -464,7 +464,7 @@ function pageTokenStatus(el) {
 
       isActive ? [
         '<div style="border-top:1px solid var(--color-border);padding:12px;text-align:center">',
-        '<button id="ts-cancel-btn" class="btn btn-secondary btn-sm" style="color:var(--color-danger);border-color:var(--color-danger)">Cancel My Token</button>',
+        '<button id="ts-cancel-btn" class="ux4g-btn ux4g-btn-outline-danger ux4g-btn-s">Cancel My Token</button>',
         '</div>',
       ].join("") : "",
       '</div>',
@@ -496,7 +496,20 @@ function pageTokenStatus(el) {
     // Wire lookup form
     el.querySelector("#ts-lookup-form").addEventListener("submit", function (ev) {
       ev.preventDefault();
-      var num = el.querySelector("#ts-lookup-input").value.trim();
+      var inputEl = el.querySelector("#ts-lookup-input");
+      var num = inputEl.value.trim();
+
+      if (!num) {
+        inputEl.setAttribute("aria-invalid", "true");
+        inputEl.setAttribute("aria-describedby", "ts-lookup-error");
+        el.querySelector("#ts-status-card").innerHTML = '<div id="ts-lookup-error" class="alert alert-error" style="max-width:500px">Enter your token number to check its status.</div>';
+        inputEl.focus();
+        return;
+      }
+
+      inputEl.removeAttribute("aria-invalid");
+      inputEl.removeAttribute("aria-describedby");
+
       var found = Engine.findByNumber(num);
       el.querySelector("#ts-status-card").innerHTML = renderStatus(found);
       if (found) {
