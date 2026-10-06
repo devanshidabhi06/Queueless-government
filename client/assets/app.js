@@ -565,7 +565,45 @@ function pageTokenStatus(el) {
     var etaPulse = isActive && tok.etaSeconds != null && tok.etaSeconds <= 60 ?
       ' style="color:#fbbf24;animation:live-ping 1.8s ease-out infinite"' : "";
 
+    var steps = [
+      { label: "Token Issued", key: "ISSUED" },
+      { label: "In Queue", key: "WAITING" },
+      { label: "Now Calling", key: "CALLED" },
+      { label: "Completed", key: "DONE" }
+    ];
+
+    var currentStep = 1;
+    if (tok.status === "CALLED") {
+      currentStep = 2;
+    } else if (tok.status === "SERVED") {
+      currentStep = 3;
+    } else if (tok.status === "CANCELLED" || tok.status === "NO_SHOW" || tok.status === "UNABLE_TO_PROCESS") {
+      currentStep = 3;
+      steps[3].label = "Closed: " + (tok.status === "CANCELLED" ? "Cancelled" : tok.status === "NO_SHOW" ? "No Show" : "Unable");
+    } else if (tok.status === "RESERVED") {
+      currentStep = 0;
+      steps[0].label = "Reserved";
+    }
+
+    var trackerHtml = [
+      '<div class="tw-status-tracker" style="margin: 0 auto 24px auto;">',
+      steps.map(function(s, i) {
+        var isCompleted = i < currentStep;
+        var isCurrent = i === currentStep;
+        var stateClass = isCompleted ? "is-completed" : (isCurrent ? "is-current" : "");
+        var icon = isCompleted ? '&#10003;' : (i + 1);
+        return [
+          '<div class="tw-status-tracker__item ' + stateClass + '" style="display:flex; flex-direction:column; align-items:center; width:60px;">',
+          '<div class="tw-status-tracker__node">' + icon + '</div>',
+          '<div class="tw-status-tracker__label">' + esc(s.label) + '</div>',
+          '</div>'
+        ].join("");
+      }).join(""),
+      '</div>'
+    ].join("");
+
     return [
+      trackerHtml,
       '<div class="card" style="max-width:500px;background:var(--color-card);border:1px solid var(--color-border);box-shadow:var(--shadow-card)">',
       '<div style="text-align:center;padding:16px 8px 20px">',
       '<div style="font-size:0.65rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-muted);margin-bottom:8px">Token Number</div>',
