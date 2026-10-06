@@ -597,11 +597,11 @@ function pageTokenStatus(el) {
         if (isCompleted) {
           if (i === 3) {
             if (tok.status === "DONE") {
-              icon = '✅';
-              inlineNodeStyle = 'border-color:var(--color-success);';
+              icon = '&#10003;';
+              inlineNodeStyle = 'background:var(--color-success); border-color:var(--color-success); color:#fff;';
             } else {
-              icon = '❌';
-              inlineNodeStyle = 'border-color:var(--color-danger);';
+              icon = '&#10005;'; // 'X' character
+              inlineNodeStyle = 'background:var(--color-danger); border-color:var(--color-danger); color:#fff;';
             }
           } else {
             icon = '&#10003;';
