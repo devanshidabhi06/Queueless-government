@@ -106,6 +106,11 @@ function qlHighlightNav(route) {
     const match = el.dataset.route === route ||
                   (route.startsWith(el.dataset.route) && el.dataset.route !== "/");
     el.classList.toggle("active", match);
+    if (match) {
+      el.setAttribute("aria-current", "page");
+    } else {
+      el.removeAttribute("aria-current");
+    }
   });
 }
 
