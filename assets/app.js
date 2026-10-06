@@ -588,13 +588,29 @@ function pageTokenStatus(el) {
     var trackerHtml = [
       '<div class="tw-status-tracker" style="margin: 0 auto 24px auto;">',
       steps.map(function(s, i) {
-        var isCompleted = i < currentStep;
-        var isCurrent = i === currentStep;
+        var isCompleted = i < currentStep || (i === 3 && currentStep === 3);
+        var isCurrent = i === currentStep && i !== 3;
         var stateClass = isCompleted ? "is-completed" : (isCurrent ? "is-current" : "");
-        var icon = isCompleted ? '&#10003;' : (i + 1);
+        
+        var icon = (i + 1);
+        var inlineNodeStyle = '';
+        if (isCompleted) {
+          if (i === 3) {
+            if (tok.status === "DONE") {
+              icon = '✅';
+              inlineNodeStyle = 'border-color:var(--color-success);';
+            } else {
+              icon = '❌';
+              inlineNodeStyle = 'border-color:var(--color-danger);';
+            }
+          } else {
+            icon = '&#10003;';
+          }
+        }
+
         return [
           '<div class="tw-status-tracker__item ' + stateClass + '" style="display:flex; flex-direction:column; align-items:center; width:60px;">',
-          '<div class="tw-status-tracker__node">' + icon + '</div>',
+          '<div class="tw-status-tracker__node" style="' + inlineNodeStyle + '">' + icon + '</div>',
           '<div class="tw-status-tracker__label">' + esc(s.label) + '</div>',
           '</div>'
         ].join("");
