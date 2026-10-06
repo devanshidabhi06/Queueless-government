@@ -198,45 +198,85 @@ function adminGuard() {
    C-ROUTES — Shared / Landing
 ================================================================ */
 function pageHome(el) {
+  var svcs = [];
+  try {
+    svcs = Engine.getOffices()[0] ? Engine.getServices(Engine.getOffices()[0].id) : [];
+  } catch(e) {}
+
+  var servicesHtml = svcs.map(function(s) {
+    return [
+      '<div class="card" style="display:flex;flex-direction:column;gap:12px;border:1px solid var(--color-border);padding:16px;">',
+      '<div style="font-weight:700;font-size:1.1rem;color:var(--color-text)">' + esc(s.name) + '</div>',
+      '<div class="ql-nums" style="font-size:0.875rem;color:var(--color-text-soft)">Avg. service time: ' + Math.round(s.avgServiceSeconds / 60) + ' mins</div>',
+      '<a href="#/take-token" class="ux4g-btn ux4g-btn-primary ux4g-btn-s" style="margin-top:auto;width:max-content">Start</a>',
+      '</div>'
+    ].join("");
+  }).join("");
+
+  var snapshotHtml = "";
+  try {
+    var snapStr = localStorage.getItem("ql_sync_snapshot_v1");
+    if (snapStr) {
+      var snapData = JSON.parse(snapStr);
+      if (snapData && snapData.payload && snapData.payload.services) {
+        var snap = snapData.payload;
+        var nowServingTokens = snap.services.map(function(s) {
+          if (s.nowServing) return '<span class="ql-nums" style="font-weight:700;color:var(--color-text)">' + esc(s.nowServing.tokenNumber) + ' (' + esc(s.name) + ')</span>';
+          return null;
+        }).filter(Boolean).join(", ");
+        
+        if (nowServingTokens) {
+          snapshotHtml = [
+            '<div style="margin-bottom:24px;padding:12px 16px;background:var(--color-card);border-left:4px solid var(--color-brand);border-radius:var(--radius-md);border-top:1px solid var(--color-border);border-right:1px solid var(--color-border);border-bottom:1px solid var(--color-border)">',
+            '<div style="font-size:0.875rem;font-weight:600;color:var(--color-text);margin-bottom:4px">Live Queue Status</div>',
+            '<div style="font-size:0.95rem;color:var(--color-text-soft)">Now serving: ' + nowServingTokens + '</div>',
+            '<div class="ql-nums" style="font-size:0.75rem;color:var(--color-muted);margin-top:4px">Last updated: ' + fmtTime(snap.updatedAt) + '</div>',
+            '</div>'
+          ].join("");
+        }
+      }
+    }
+  } catch(e) {}
+
   el.innerHTML = [
-    '<div class="ql-pagehead">',
-    '<span class="ql-pagehead__eyebrow">&#127963; Central Government Services Office</span>',
-    '<h1 class="ql-pagehead__title">Skip the Queue.<br>Not the Service.</h1>',
-    '<p class="ql-pagehead__subtitle">Virtual tokens &bull; Real-time ETA &bull; WhatsApp/SMS reminders</p>',
+    '<div style="background:var(--color-brand);color:#ffffff;padding:48px 24px;border-radius:var(--radius-lg);margin-bottom:32px;box-shadow:0 10px 20px rgba(0,0,0,0.1)">',
+    '<h1 style="font-size:clamp(2rem, 5vw, 3rem);font-weight:800;line-height:1.2;margin-bottom:16px">Welcome to the Service Portal</h1>',
+    '<p style="font-size:1.1rem;opacity:0.9;max-width:600px;margin-bottom:24px;line-height:1.6">',
+    'Skip the physical queue. Take a virtual token, receive your ETA, and get a reminder when it is your turn.',
+    '</p>',
+    '<div style="display:flex;gap:16px;flex-wrap:wrap">',
+    '<a href="#/take-token" class="ux4g-btn ux4g-btn-outline-neutral ux4g-btn-l" style="background:#ffffff;color:var(--color-brand);border-color:#ffffff">Take a token</a>',
+    '<a href="#/token-status" class="ux4g-btn ux4g-btn-outline-neutral ux4g-btn-l" style="color:#ffffff;border-color:rgba(255,255,255,0.3)">Check token status</a>',
+    '</div>',
     '</div>',
 
-    '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-bottom:24px">',
+    snapshotHtml,
 
-    '<div class="card card--glow" style="display:flex;flex-direction:column;gap:14px">',
-    '<div style="font-size:2rem">&#127247;</div>',
-    '<div><div style="font-weight:700;font-size:1rem;margin-bottom:6px">Take a Virtual Token</div>',
-    '<div style="font-size:0.875rem;color:var(--color-text-soft);line-height:1.6">Join any service queue without standing in line. Receive live ETA and reminders on your phone.</div></div>',
-    '<a href="#/take-token" id="cta-take-token" class="ux4g-btn ux4g-btn-primary ux4g-btn-l" style="margin-top:auto">&#127247; Take Token</a>',
+    '<div class="alert alert-info" style="margin-bottom:32px;display:flex;gap:12px;align-items:flex-start">',
+    '<div style="font-size:1.2rem">&#128227;</div>',
+    '<div><strong style="display:block;margin-bottom:4px">Notices</strong><span style="font-size:0.875rem">This is a demonstration of the QueueLess government service portal prototype. Reminders and ETAs are fully simulated.</span></div>',
     '</div>',
 
-    '<div class="card" style="display:flex;flex-direction:column;gap:14px">',
-    '<div style="font-size:2rem">&#128337;</div>',
-    '<div><div style="font-weight:700;font-size:1rem;margin-bottom:6px">Check Your Status</div>',
-    '<div style="font-size:0.875rem;color:var(--color-text-soft);line-height:1.6">View your token, how many are ahead, and your ETA — updated every time the queue moves.</div></div>',
-    '<a href="#/token-status" id="cta-status" class="ux4g-btn ux4g-btn-outline-neutral ux4g-btn-l" style="margin-top:auto">&#128337; My Status</a>',
+    '<div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:32px;margin-bottom:40px">',
+    
+    '<div>',
+    '<h2 style="font-size:1.5rem;font-weight:700;color:var(--color-text);margin-bottom:16px;border-bottom:2px solid var(--color-border);padding-bottom:8px">Service Directory</h2>',
+    '<div style="display:grid;grid-template-columns:1fr;gap:16px">',
+    servicesHtml,
+    '</div>',
     '</div>',
 
-    '<div class="card" style="display:flex;flex-direction:column;gap:14px">',
-    '<div style="font-size:2rem">&#128202;</div>',
-    '<div><div style="font-weight:700;font-size:1rem;margin-bottom:6px">Live Ops Board</div>',
-    '<div style="font-size:0.875rem;color:var(--color-text-soft);line-height:1.6">Public live board showing current token, queue depth, and notification delivery summary.</div></div>',
-    '<a href="#/b/live" id="cta-live" class="ux4g-btn ux4g-btn-outline-neutral ux4g-btn-l" style="margin-top:auto">&#128202; Live Board</a>',
+    '<div>',
+    '<h2 style="font-size:1.5rem;font-weight:700;color:var(--color-text);margin-bottom:16px;border-bottom:2px solid var(--color-border);padding-bottom:8px">Quick Links</h2>',
+    '<ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:12px">',
+    '<li><a href="#/take-token" class="nav-link" style="color:var(--color-brand);font-weight:600;display:flex;align-items:center;gap:8px">&#127247; Take a token</a></li>',
+    '<li><a href="#/token-status" class="nav-link" style="color:var(--color-brand);font-weight:600;display:flex;align-items:center;gap:8px">&#128337; Check token status</a></li>',
+    '<li><a href="#/help" class="nav-link" style="color:var(--color-brand);font-weight:600;display:flex;align-items:center;gap:8px">&#10067; Help &amp; Policies</a></li>',
+    '<li><a href="#/admin/login" class="nav-link" style="color:var(--color-brand);font-weight:600;display:flex;align-items:center;gap:8px">&#128274; Staff login</a></li>',
+    '</ul>',
     '</div>',
 
-    '</div>',
-
-    '<div class="card" style="max-width:640px">',
-    '<div style="font-size:0.68rem;font-weight:700;letter-spacing:0.09em;text-transform:uppercase;color:var(--color-muted);margin-bottom:10px">&#128200; ETA Formula</div>',
-    '<code style="display:block;background:rgba(0,0,0,0.3);border:1px solid var(--color-border);border-radius:4px;padding:12px 14px;font-size:0.875rem;color:#7dd3fc;margin-bottom:10px">',
-    'etaSeconds = &lceil;(tokensAhead / activeCounters) &times; avgServiceSeconds&rceil;',
-    '</code>',
-    '<p style="font-size:0.8rem;color:var(--color-muted);margin:0;line-height:1.6">Pure explainable queue math — not AI. ETA recalculates every time the queue changes.</p>',
-    '</div>',
+    '</div>'
   ].join("");
 }
 
