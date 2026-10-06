@@ -60,6 +60,53 @@ body {
   margin: 0;
 }
 
+/* =================================================================
+   PHASE 0.30a SHIM: Temporary UX4G Light Mode Compatibility
+================================================================= */
+html[data-theme="light"]:not(.tw-high-contrast) {
+  /* Phase 0.30a.1: flip app core vars for light mode (temporary bridge until full UX4G token mapping) */
+  --color-bg: #f8fafc;
+  --color-card: #ffffff;
+  --color-text: #0f172a;
+  --color-text-soft: #475569;
+  --color-border: #e2e8f0;
+}
+
+html[data-theme="light"]:not(.tw-high-contrast) #app-root .bg-slate-800,
+html[data-theme="light"]:not(.tw-high-contrast) #app-root .bg-slate-900,
+html[data-theme="light"]:not(.tw-high-contrast) #app-root .bg-slate-950 {
+  background-color: #ffffff !important;
+  color: var(--color-text) !important;
+}
+
+html[data-theme="light"]:not(.tw-high-contrast) body {
+  background-color: #f8fafc !important;
+  color: #0f172a !important;
+}
+html[data-theme="light"]:not(.tw-high-contrast) .bg-surface,
+html[data-theme="light"]:not(.tw-high-contrast) .card {
+  background-color: #ffffff !important;
+  border: 1px solid #e2e8f0;
+}
+html[data-theme="light"]:not(.tw-high-contrast) .text-slate-100,
+html[data-theme="light"]:not(.tw-high-contrast) .text-slate-200,
+html[data-theme="light"]:not(.tw-high-contrast) .text-slate-300 {
+  color: #1e293b !important;
+}
+html[data-theme="light"]:not(.tw-high-contrast) ::placeholder {
+  color: #64748b !important;
+  opacity: 1 !important;
+}
+
+/* Global focus rule (GIGW 3.0 / UX4G baseline) */
+*:focus-visible {
+  outline: 3px solid var(--color-brand) !important;
+  outline-offset: 2px !important;
+}
+html.tw-high-contrast *:focus-visible {
+  outline: 3px solid #ff0 !important;
+}
+
 /* ── Disclaimer bar ─────────────────────────────────────────────── */
 .disclaimer-bar {
   background: #78350f;

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full">
+<html lang="en" class="h-full" data-theme="light">
 
 <head>
   <meta charset="UTF-8" />
@@ -18,12 +18,18 @@
     href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap"
     rel="stylesheet" />
 
+  <!-- UX4G Design System CSS -->
+  <link rel="stylesheet" href="https://cdn.ux4g.gov.in/UX4G@3.3.0/index.css" />
+
   <!-- App CSS -->
-  <link rel="stylesheet" href="assets/styles.css" />
+  <link rel="stylesheet" href="assets/styles.css?v=3" />
 
   <!-- Tailwind config -->
   <script>
     tailwind.config = {
+      corePlugins: {
+        preflight: false,
+      },
       theme: {
         extend: {
           fontFamily: {
@@ -54,7 +60,7 @@
   </script>
 </head>
 
-<body class="h-full font-sans bg-surface text-slate-100 flex flex-col">
+<body class="h-full font-sans flex flex-col">
 
   <!-- ===== SKIP TO MAIN CONTENT (keyboard / screen-reader accessibility) ===== -->
   <a href="#app-root" id="skip-to-main" class="skip-link">Skip to main content</a>
@@ -87,53 +93,46 @@
   </div>
 
   <!-- ===== GOVERNMENT UTILITY STRIP (DBIM/NIC portal pattern) ===== -->
-  <div id="gov-utility-strip" class="gov-utility-strip" role="navigation" aria-label="Utility links">
-    <div class="gov-utility-strip__inner">
-      <span class="gov-utility-strip__notice">&#9888; Hackathon Prototype &mdash; Not an official Government
-        website.</span>
+  <div id="gov-utility-strip" class="gov-utility-strip" role="navigation" aria-label="Utility links" style="background-color: var(--color-card);">
+    <div class="gov-utility-strip__inner" style="display:flex;justify-content:space-between;padding:var(--space-1) var(--space-2);">
       <div class="gov-utility-strip__links" aria-label="Quick utility links">
-        <a href="#/" class="gov-utility-link">Sitemap</a>
+        <a href="#app-root" class="gov-utility-link">Skip to main content</a>
         <span class="gov-utility-sep" aria-hidden="true">|</span>
-        <a href="#/" class="gov-utility-link">Help</a>
+        <a href="#a11y-toolbar" class="gov-utility-link">Accessibility Options</a>
         <span class="gov-utility-sep" aria-hidden="true">|</span>
-        <a href="#/" class="gov-utility-link">Contact</a>
+        <a href="#/help" class="gov-utility-link">Help</a>
       </div>
     </div>
   </div>
 
   <!-- ===== HEADER ===== -->
-  <header id="app-header" class="app-header">
-    <div class="header-inner">
-      <a href="#/" id="logo-link" class="logo" aria-label="QueueLess home">
-        <span class="logo-icon" aria-hidden="true">&#127963;</span>
-        <span class="logo-text">Queue<span class="text-brand-400">Less</span></span>
+  <header id="app-header" class="app-header" style="background-color: #ffffff; color: #1e293b; border-bottom: 1px solid #e2e8f0;">
+    <div class="header-inner" style="padding:var(--space-2);">
+      <a href="#/" id="logo-link" class="logo" aria-label="QueueLess home" style="color:#1e293b; font-weight:700; font-size:1.25rem;">
+        <span class="logo-text">QueueLess</span>
       </a>
 
       <nav id="main-nav" class="main-nav" aria-label="Primary navigation">
-        <a href="#/" id="nav-home" class="nav-link" data-route="/">Home</a>
-        <a href="#/take-token" id="nav-take-token" class="nav-link" data-route="/take-token">Take Token</a>
-        <a href="#/token-status" id="nav-status" class="nav-link" data-route="/token-status">My Status</a>
-        <a href="#/b/live" id="nav-live" class="nav-link" data-route="/b/live">&#128202; Live Board</a>
-        <a href="#/admin/login" id="nav-admin" class="nav-link nav-link--admin" data-route="/admin/login">Admin
-          &#8599;</a>
+        <a href="#/" id="nav-home" class="nav-link" data-route="/" style="color:#475569;">Home</a>
+        <a href="#/take-token" id="nav-take-token" class="nav-link" data-route="/take-token" style="color:#475569;">Join Queue</a>
+        <a href="#/token-status" id="nav-status" class="nav-link" data-route="/token-status" style="color:#475569;">Status</a>
+        <a href="#/help" id="nav-help" class="nav-link" data-route="/help" style="color:#475569;">Help</a>
       </nav>
 
       <!-- Mobile hamburger -->
       <button id="mobile-menu-btn" class="mobile-menu-btn" aria-label="Toggle navigation menu" aria-expanded="false">
-        <span class="hamburger-line"></span>
-        <span class="hamburger-line"></span>
-        <span class="hamburger-line"></span>
+        <span class="hamburger-line" style="background-color:#475569;"></span>
+        <span class="hamburger-line" style="background-color:#475569;"></span>
+        <span class="hamburger-line" style="background-color:#475569;"></span>
       </button>
     </div>
 
     <!-- Mobile nav drawer -->
-    <nav id="mobile-nav" class="mobile-nav hidden" aria-label="Mobile navigation">
-      <a href="#/" id="mobile-nav-home" class="mobile-nav-link" data-route="/">Home</a>
-      <a href="#/take-token" id="mobile-nav-take-token" class="mobile-nav-link" data-route="/take-token">Take Token</a>
-      <a href="#/token-status" id="mobile-nav-status" class="mobile-nav-link" data-route="/token-status">My Status</a>
-      <a href="#/b/live" id="mobile-nav-live" class="mobile-nav-link" data-route="/b/live">&#128202; Live Board</a>
-      <a href="#/admin/login" id="mobile-nav-admin" class="mobile-nav-link mobile-nav-link--admin"
-        data-route="/admin/login">Admin &#8599;</a>
+    <nav id="mobile-nav" class="mobile-nav hidden" aria-label="Mobile navigation" style="background-color:#ffffff;">
+      <a href="#/" id="mobile-nav-home" class="mobile-nav-link" data-route="/" style="color:#475569;">Home</a>
+      <a href="#/take-token" id="mobile-nav-take-token" class="mobile-nav-link" data-route="/take-token" style="color:#475569;">Join Queue</a>
+      <a href="#/token-status" id="mobile-nav-status" class="mobile-nav-link" data-route="/token-status" style="color:#475569;">Status</a>
+      <a href="#/help" id="mobile-nav-help" class="mobile-nav-link" data-route="/help" style="color:#475569;">Help</a>
     </nav>
   </header>
 
@@ -141,60 +140,42 @@
   <main id="app-root" class="app-root" tabindex="-1"></main>
 
   <!-- ===== FOOTER (DBIM-style multi-column layout) ===== -->
-  <footer id="app-footer" class="app-footer">
-    <div class="footer-inner">
-
-      <!-- Brand / title row -->
-      <div class="footer-top-row">
-        <div class="footer-brand">
-          <span class="logo-icon" aria-hidden="true">&#127963;</span>
-          <span class="footer-brand__name">QueueLess</span>
-          <span class="footer-brand__sub">&mdash; Virtual Queue System</span>
+  <footer id="app-footer" class="app-footer" style="background-color: #f8fafc; color: #334155; border-top: 1px solid #cbd5e1;">
+    <div class="footer-inner" style="padding: var(--space-4) var(--space-2) var(--space-3);">
+      
+      <!-- Three-column links grid -->
+      <div class="footer-section-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(160px, 1fr)); gap:var(--space-3) var(--space-4); padding-bottom:var(--space-2); border-bottom:1px solid #e2e8f0;">
+        <div class="footer-col" style="display:flex; flex-direction:column; gap:var(--space-1);">
+          <div class="footer-col__heading" style="color:#0f172a; font-weight:700;">Support</div>
+          <a href="#/help" class="footer-link" style="color:#475569;">Help</a>
+          <a href="#/help" class="footer-link" style="color:#475569;">Contact Us</a>
+        </div>
+        <div class="footer-col" style="display:flex; flex-direction:column; gap:var(--space-1);">
+          <div class="footer-col__heading" style="color:#0f172a; font-weight:700;">Policies</div>
+          <a href="#/help" class="footer-link" style="color:#475569;">Privacy Policy (Prototype)</a>
+          <a href="#/help" class="footer-link" style="color:#475569;">Terms of Use</a>
+          <a href="#/help" class="footer-link" style="color:#475569;">Accessibility Statement</a>
+        </div>
+        <div class="footer-col" style="display:flex; flex-direction:column; gap:var(--space-1);">
+          <div class="footer-col__heading" style="color:#0f172a; font-weight:700;">Metadata</div>
+          <div style="font-size:0.8rem; line-height:1.6; color:#475569;">
+            QueueLess Team / Hackathon Prototype
+            <br />
+            Last reviewed: <strong>Oct 03, 2026</strong>
+          </div>
         </div>
       </div>
-
-      <!-- Useful Links grid (DBIM/NIC portal pattern) -->
-      <div class="footer-section-grid">
-        <div class="footer-col">
-          <div class="footer-col__heading">Useful Links</div>
-          <a href="#/take-token" class="footer-link">Take Token</a>
-          <a href="#/token-status" class="footer-link">Token Status</a>
-          <a href="#/b/live" class="footer-link">Live Board</a>
-          <a href="#/admin/queue" class="footer-link">Admin Queue</a>
-          <a href="#/admin/notifications" class="footer-link">Notification Log</a>
-        </div>
-        <div class="footer-col">
-          <div class="footer-col__heading">Website Policies</div>
-          <a href="#/" class="footer-link">Privacy Policy</a>
-          <a href="#/" class="footer-link">Terms of Use</a>
-          <a href="#/" class="footer-link">Accessibility Statement</a>
-          <a href="#/" class="footer-link">Sitemap</a>
-        </div>
-        <div class="footer-col">
-          <div class="footer-col__heading">Support</div>
-          <a href="#/" class="footer-link">Help &amp; FAQs</a>
-          <a href="#/" class="footer-link">Contact Us</a>
-          <a href="#/" class="footer-link">Feedback</a>
-        </div>
-      </div>
-
-      <!-- Ownership / Prototype notice (non-negotiable — must not be removed) -->
-      <div class="footer-ownership" role="note">
-        <strong>&#9888; Hackathon Prototype &mdash; Not an official Government website.</strong>
-        This application was built for the QueueLess hackathon challenge (PS-2) and is not affiliated with,
-        endorsed by, or associated with any ministry, department, or government authority of India or any other country.
-        ETA is explainable queue math &mdash; not AI prediction.
-        Demo mode: reminder triggers use 60 s / 30 s for judging; production would use 10 min / 5 min.
-      </div>
-
-      <!-- Legal bar -->
-      <div class="footer-legal-bar">
-        <span>&copy; 2026 QueueLess Team. All rights reserved.</span>
-        <span>Last updated: <strong>Sep 30, 2026</strong></span>
-      </div>
-
+    </div>
+    
+    <!-- Disclaimer Band -->
+    <div style="background-color:#0f172a; color:#f8fafc; padding: 12px 16px; text-align:center; font-size:0.85rem; font-weight:500;">
+      Hackathon Prototype &mdash; Not an official Government website.
     </div>
   </footer>
+
+  <!-- UX4G Design System JS -->
+  <script src="https://cdn.ux4g.gov.in/UX4G@3.3.0/ux4g.js"></script>
+  <script src="https://cdn.ux4g.gov.in/UX4G@3.3.0/ux4g-custom.js"></script>
 
   <!-- App scripts: engine first (state), then ui helpers, then router -->
   <script src="assets/engine.js"></script>
