@@ -53,6 +53,11 @@ function navigate(path) {
 
 function renderRoute() {
   var route = getRoute();
+  if (route === "/admin" || route === "/admin/") {
+    var dest = isAdminAuthed() ? "/admin/queue" : "/admin/login";
+    window.location.replace(window.location.pathname + window.location.search + "#" + dest);
+    return;
+  }
   var root = document.getElementById("app-root");
   if (!root) return;
 
@@ -697,12 +702,22 @@ function pageAdminQueue(el) {
       '<p class="ql-pagehead__subtitle">Call tokens, mark served or no-show, run reminder checks.</p>',
       '</div>',
 
+      '<nav aria-label="Staff navigation" style="margin-bottom:20px;padding:12px;background:#f8fafc;border-radius:6px;border:1px solid #cbd5e1">',
+      '<div style="display:flex;gap:16px;flex-wrap:wrap;align-items:center;">',
+      '<a href="#/admin/queue" class="nav-link" aria-current="page" style="color:#0369a1;font-weight:600">Queue</a>',
+      '<a href="#/admin/notifications" class="nav-link" style="color:#0369a1;font-weight:600">Notifications</a>',
+      '<a href="#/display" target="_blank" rel="noopener" class="nav-link" style="color:#0369a1;font-weight:600">Display Board &#8599;</a>',
+      '<button id="aq-logout-btn" class="ux4g-btn ux4g-btn-outline-danger ux4g-btn-s" style="margin-left:auto">Logout</button>',
+      '</div>',
+      '<div style="font-size:0.75rem;color:#475569;margin-top:8px;">',
+      'Note: in this prototype, the display board in a new tab does not sync with this tab yet.',
+      '</div>',
+      '</nav>',
+
       // Top action bar
       '<div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:20px">',
       '<button id="aq-reminder-btn" class="ux4g-btn ux4g-btn-primary ux4g-btn-m">&#9881;&#65039; Run Reminder Check Now</button>',
       '<button id="aq-reset-btn"    class="ux4g-btn ux4g-btn-outline-neutral ux4g-btn-m">&#9851;&#65039; Seed / Reset Demo</button>',
-      '<a href="#/admin/notifications"  class="ux4g-btn ux4g-btn-outline-neutral ux4g-btn-m">&#128241; Notification Log</a>',
-      '<button id="aq-logout-btn"   class="ux4g-btn ux4g-btn-outline-danger ux4g-btn-m">Logout</button>',
       '</div>',
 
       // KPI row
@@ -875,8 +890,18 @@ function pageAdminNotifications(el) {
       '<p class="ql-pagehead__subtitle">Truthful audit of every attempted WhatsApp / SMS reminder dispatch.</p>',
       '</div>',
 
+      '<nav aria-label="Staff navigation" style="margin-bottom:20px;padding:12px;background:#f8fafc;border-radius:6px;border:1px solid #cbd5e1">',
+      '<div style="display:flex;gap:16px;flex-wrap:wrap;align-items:center;">',
+      '<a href="#/admin/queue" class="nav-link" style="color:#0369a1;font-weight:600">Queue</a>',
+      '<a href="#/admin/notifications" class="nav-link" aria-current="page" style="color:#0369a1;font-weight:600">Notifications</a>',
+      '<a href="#/display" target="_blank" rel="noopener" class="nav-link" style="color:#0369a1;font-weight:600">Display Board &#8599;</a>',
+      '</div>',
+      '<div style="font-size:0.75rem;color:#475569;margin-top:8px;">',
+      'Note: in this prototype, the display board in a new tab does not sync with this tab yet.',
+      '</div>',
+      '</nav>',
+
       '<div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:16px">',
-      '<a href="#/admin/queue" class="ux4g-btn ux4g-btn-outline-neutral ux4g-btn-s">&larr; Queue</a>',
       '<button id="an-reminder-btn" class="ux4g-btn ux4g-btn-primary ux4g-btn-s">&#9881;&#65039; Run Reminder Check Now</button>',
       '</div>',
 
