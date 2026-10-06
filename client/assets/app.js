@@ -37,6 +37,10 @@ var ROUTES = {
   "/b/live": pageDirectionBLive,
   "/display": pageDisplay,
   "/help": pageHelp,
+  "/terms": pageTerms,
+  "/privacy": pagePrivacy,
+  "/copyright": pageCopyright,
+  "/hyperlinking": pageHyperlinking,
 };
 
 /* ================================================================
@@ -276,6 +280,55 @@ function pageHome(el) {
     '</ul>',
     '</div>',
 
+    '<div>',
+    '<h2 id="a11y" style="font-size:1.25rem; font-weight:600; margin-bottom:var(--space-1); color:var(--color-text);">Accessibility Options</h2>',
+    '<p style="margin:0; font-size:1rem; line-height:1.6; color:var(--color-text-soft);">Use the accessibility toolbar at the top of the screen to adjust text size or enable high contrast mode.</p>',
+    '</div>',
+
+    '</div>'
+  ].join("");
+}
+
+function pageTerms(el) {
+  el.innerHTML = [
+    '<div class="ql-pagehead" style="padding-bottom:var(--space-3)">',
+    '<h1 class="ql-pagehead__title" style="font-size:2rem; font-weight:700; color:var(--color-text);">Terms &amp; Conditions</h1>',
+    '</div>',
+    '<div class="card" style="max-width:800px;">',
+    '<p style="font-size:1rem; line-height:1.6; color:var(--color-text-soft);">This is a hackathon prototype. These terms are provided for demonstration purposes only.</p>',
+    '</div>'
+  ].join("");
+}
+
+function pagePrivacy(el) {
+  el.innerHTML = [
+    '<div class="ql-pagehead" style="padding-bottom:var(--space-3)">',
+    '<h1 class="ql-pagehead__title" style="font-size:2rem; font-weight:700; color:var(--color-text);">Privacy Policy</h1>',
+    '</div>',
+    '<div class="card" style="max-width:800px;">',
+    '<p style="font-size:1rem; line-height:1.6; color:var(--color-text-soft);">This prototype does not store any Personally Identifiable Information (PII). Display sync uses token and counter data only (no phone numbers or WhatsApp details are persisted or broadcast).</p>',
+    '</div>'
+  ].join("");
+}
+
+function pageCopyright(el) {
+  el.innerHTML = [
+    '<div class="ql-pagehead" style="padding-bottom:var(--space-3)">',
+    '<h1 class="ql-pagehead__title" style="font-size:2rem; font-weight:700; color:var(--color-text);">Copyright Policy</h1>',
+    '</div>',
+    '<div class="card" style="max-width:800px;">',
+    '<p style="font-size:1rem; line-height:1.6; color:var(--color-text-soft);">QueueLess Prototype Copyright &copy; 2026. All rights reserved.</p>',
+    '</div>'
+  ].join("");
+}
+
+function pageHyperlinking(el) {
+  el.innerHTML = [
+    '<div class="ql-pagehead" style="padding-bottom:var(--space-3)">',
+    '<h1 class="ql-pagehead__title" style="font-size:2rem; font-weight:700; color:var(--color-text);">Hyperlinking Policy</h1>',
+    '</div>',
+    '<div class="card" style="max-width:800px;">',
+    '<p style="font-size:1rem; line-height:1.6; color:var(--color-text-soft);">External links are provided for convenience only. We are not responsible for external content.</p>',
     '</div>'
   ].join("");
 }
