@@ -243,48 +243,63 @@ function pageHome(el) {
   } catch(e) {}
 
   el.innerHTML = [
-    '<div style="background:var(--color-brand);color:#ffffff;padding:48px 24px;border-radius:var(--radius-lg);margin-bottom:32px;box-shadow:0 10px 20px rgba(0,0,0,0.1)">',
-    '<h1 style="font-size:clamp(2rem, 5vw, 3rem);font-weight:800;line-height:1.2;margin-bottom:16px">Welcome to the Service Portal</h1>',
-    '<p style="font-size:1.1rem;opacity:0.9;max-width:600px;margin-bottom:24px;line-height:1.6">',
-    'Skip the physical queue. Take a virtual token, receive your ETA, and get a reminder when it is your turn.',
-    '</p>',
-    '<div style="display:flex;gap:16px;flex-wrap:wrap">',
-    '<a href="#/take-token" class="ux4g-btn ux4g-btn-outline-neutral ux4g-btn-l" style="background:#ffffff;color:var(--color-brand);border-color:#ffffff">Take a token</a>',
-    '<a href="#/token-status" class="ux4g-btn ux4g-btn-outline-neutral ux4g-btn-l" style="background:transparent;color:#ffffff;border-color:rgba(255,255,255,0.5)">Check token status</a>',
+    // Marquee
+    '<div style="margin-left:calc(50% - 50vw); margin-right:calc(50% - 50vw); background-color:#f8fafc; border-bottom:1px solid #cbd5e1; border-top:1px solid #cbd5e1; padding:6px 0; margin-top:-24px; position:relative; overflow:hidden;">',
+    '<marquee scrollamount="6" style="color:#0f172a; font-size:0.9rem; font-weight:600;">QueueLess Demo System will commence operations on 30 09 2026 Monday. Citizens having appointments are requested to visit the portal on or after the commencement date.</marquee>',
+    '</div>',
+
+    // Hero Banner
+    '<div style="margin-left:calc(50% - 50vw); margin-right:calc(50% - 50vw); background:linear-gradient(135deg, #7f1d1d 0%, #1e1b4b 100%); color:#ffffff; padding:64px 24px 140px 24px;">',
+    '<div style="max-width:1200px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; position:relative;">',
+    '<div>',
+    '<h2 style="font-size:0.9rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; margin-bottom:12px; color:#fca5a5;">Welcome to QueueLess</h2>',
+    '<h1 style="font-size:clamp(2rem, 4vw, 3.2rem); font-weight:700; line-height:1.2; max-width:700px;">Delivering Token services to citizens in a timely, accessible and reliable manner</h1>',
+    '</div>',
+    '<div style="font-size:160px; opacity:0.1; position:absolute; right:5%; top:50%; transform:translateY(-50%); pointer-events:none;">&#127970;</div>',
+    '</div>',
+    '</div>',
+
+    // Quick Links (Overlapping Hero)
+    '<div style="max-width:1200px; margin: -100px auto 48px auto; position:relative; z-index:10; background:var(--color-card); border-radius:12px; padding:32px; box-shadow:0 15px 30px rgba(0,0,0,0.12); border:1px solid var(--color-border); text-align:center;">',
+    '<h2 style="font-size:1.75rem; font-weight:700; color:var(--color-text); margin-bottom:32px;">Quick Links</h2>',
+    '<div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:24px;">',
+    
+    // Card 1
+    '<a href="#/take-token" style="display:flex; align-items:center; gap:16px; background:#fef9c3; border:1px solid #fde047; border-radius:8px; padding:20px 24px; text-decoration:none; color:#1e293b; transition:transform 0.2s; box-shadow:0 4px 6px -1px rgba(0,0,0,0.1);">',
+    '<div style="font-size:2.5rem; filter:drop-shadow(0 2px 4px rgba(0,0,0,0.1));">&#128221;</div>', // Document
+    '<div style="font-weight:600; font-size:1.15rem; line-height:1.3; text-align:left;">Apply for<br>Virtual Token</div>',
+    '</a>',
+    // Card 2
+    '<a href="#/token-status" style="display:flex; align-items:center; gap:16px; background:#fef9c3; border:1px solid #fde047; border-radius:8px; padding:20px 24px; text-decoration:none; color:#1e293b; transition:transform 0.2s; box-shadow:0 4px 6px -1px rgba(0,0,0,0.1);">',
+    '<div style="font-size:2.5rem; filter:drop-shadow(0 2px 4px rgba(0,0,0,0.1));">&#128337;</div>', // Clock/Search
+    '<div style="font-weight:600; font-size:1.15rem; line-height:1.3; text-align:left;">Check Token<br>Availability</div>',
+    '</a>',
+    // Card 3
+    '<a href="#/display" target="_blank" style="display:flex; align-items:center; gap:16px; background:#fef9c3; border:1px solid #fde047; border-radius:8px; padding:20px 24px; text-decoration:none; color:#1e293b; transition:transform 0.2s; box-shadow:0 4px 6px -1px rgba(0,0,0,0.1);">',
+    '<div style="font-size:2.5rem; filter:drop-shadow(0 2px 4px rgba(0,0,0,0.1));">&#128250;</div>', // TV
+    '<div style="font-weight:600; font-size:1.15rem; line-height:1.3; text-align:left;">Live Display<br>Board</div>',
+    '</a>',
+    // Card 4
+    '<a href="#/help" style="display:flex; align-items:center; gap:16px; background:#fef9c3; border:1px solid #fde047; border-radius:8px; padding:20px 24px; text-decoration:none; color:#1e293b; transition:transform 0.2s; box-shadow:0 4px 6px -1px rgba(0,0,0,0.1);">',
+    '<div style="font-size:2.5rem; filter:drop-shadow(0 2px 4px rgba(0,0,0,0.1));">&#128737;&#65039;</div>', // Shield
+    '<div style="font-weight:600; font-size:1.15rem; line-height:1.3; text-align:left;">Know About<br>Our Services</div>',
+    '</a>',
+
     '</div>',
     '</div>',
 
     snapshotHtml,
 
-    '<div class="alert alert-info" style="margin-bottom:32px;display:flex;gap:12px;align-items:flex-start">',
+    '<div class="alert alert-info" style="max-width:1200px; margin:0 auto 32px auto; display:flex; gap:12px; align-items:flex-start;">',
     '<div style="font-size:1.2rem">&#128227;</div>',
     '<div><strong style="display:block;margin-bottom:4px">Notices</strong><span style="font-size:0.875rem">This is a demonstration of the QueueLess government service portal prototype. Reminders and ETAs are fully simulated.</span></div>',
     '</div>',
 
-    '<div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:32px;margin-bottom:40px">',
-    
-    '<div>',
-    '<h2 style="font-size:1.5rem;font-weight:700;color:var(--color-text);margin-bottom:16px;border-bottom:2px solid var(--color-border);padding-bottom:8px">Service Directory</h2>',
-    '<div style="display:grid;grid-template-columns:1fr;gap:16px">',
+    '<div style="max-width:1200px; margin:0 auto 40px auto;">',
+    '<h2 style="font-size:2rem; font-weight:700; color:var(--color-text); text-align:center; margin-bottom:32px;">Our Services</h2>',
+    '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:24px;">',
     servicesHtml,
     '</div>',
-    '</div>',
-
-    '<div>',
-    '<h2 style="font-size:1.5rem;font-weight:700;color:var(--color-text);margin-bottom:16px;border-bottom:2px solid var(--color-border);padding-bottom:8px">Quick Links</h2>',
-    '<ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:12px">',
-    '<li><a href="#/take-token" class="nav-link" style="color:var(--color-brand);font-weight:600;display:flex;align-items:center;gap:8px">&#127247; Take a token</a></li>',
-    '<li><a href="#/token-status" class="nav-link" style="color:var(--color-brand);font-weight:600;display:flex;align-items:center;gap:8px">&#128337; Check token status</a></li>',
-    '<li><a href="#/help" class="nav-link" style="color:var(--color-brand);font-weight:600;display:flex;align-items:center;gap:8px">&#10067; Help &amp; Policies</a></li>',
-    '<li><a href="#/admin/login" class="nav-link" style="color:var(--color-brand);font-weight:600;display:flex;align-items:center;gap:8px">&#128274; Staff login</a></li>',
-    '</ul>',
-    '</div>',
-
-    '<div>',
-    '<h2 id="a11y" style="font-size:1.25rem; font-weight:600; margin-bottom:var(--space-1); color:var(--color-text);">Accessibility Options</h2>',
-    '<p style="margin:0; font-size:1rem; line-height:1.6; color:var(--color-text-soft);">Use the accessibility toolbar at the top of the screen to adjust text size or enable high contrast mode.</p>',
-    '</div>',
-
     '</div>'
   ].join("");
 }
