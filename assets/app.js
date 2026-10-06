@@ -144,21 +144,21 @@ function pageHome(el) {
     '<div style="font-size:2rem">&#127247;</div>',
     '<div><div style="font-weight:700;font-size:1rem;margin-bottom:6px">Take a Virtual Token</div>',
     '<div style="font-size:0.875rem;color:var(--color-text-soft);line-height:1.6">Join any service queue without standing in line. Receive live ETA and reminders on your phone.</div></div>',
-    '<a href="#/take-token" id="cta-take-token" class="btn btn-primary btn-lg" style="margin-top:auto">&#127247; Take Token</a>',
+    '<a href="#/take-token" id="cta-take-token" class="ux4g-btn ux4g-btn-primary ux4g-btn-l" style="margin-top:auto">&#127247; Take Token</a>',
     '</div>',
 
     '<div class="card" style="display:flex;flex-direction:column;gap:14px">',
     '<div style="font-size:2rem">&#128337;</div>',
     '<div><div style="font-weight:700;font-size:1rem;margin-bottom:6px">Check Your Status</div>',
     '<div style="font-size:0.875rem;color:var(--color-text-soft);line-height:1.6">View your token, how many are ahead, and your ETA — updated every time the queue moves.</div></div>',
-    '<a href="#/token-status" id="cta-status" class="btn btn-secondary btn-lg" style="margin-top:auto">&#128337; My Status</a>',
+    '<a href="#/token-status" id="cta-status" class="ux4g-btn ux4g-btn-outline-neutral ux4g-btn-l" style="margin-top:auto">&#128337; My Status</a>',
     '</div>',
 
     '<div class="card" style="display:flex;flex-direction:column;gap:14px">',
     '<div style="font-size:2rem">&#128202;</div>',
     '<div><div style="font-weight:700;font-size:1rem;margin-bottom:6px">Live Ops Board</div>',
     '<div style="font-size:0.875rem;color:var(--color-text-soft);line-height:1.6">Public live board showing current token, queue depth, and notification delivery summary.</div></div>',
-    '<a href="#/b/live" id="cta-live" class="btn btn-secondary btn-lg" style="margin-top:auto">&#128202; Live Board</a>',
+    '<a href="#/b/live" id="cta-live" class="ux4g-btn ux4g-btn-outline-neutral ux4g-btn-l" style="margin-top:auto">&#128202; Live Board</a>',
     '</div>',
 
     '</div>',
@@ -382,7 +382,7 @@ function pageTakeToken(el) {
         '&bull; ETA <strong class="ql-nums">' + fmtEta(tok.etaSeconds) + '</strong>',
         '</div>',
         '<div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">',
-        '<a href="#/token-status" class="btn btn-primary btn-sm">Check Status &rarr;</a>',
+        '<a href="#/token-status" class="ux4g-btn ux4g-btn-primary ux4g-btn-s">Check Status &rarr;</a>',
         '</div>',
         '<div style="margin-top:8px;font-size:0.72rem;color:var(--color-muted)">Service: ' + esc(tok.serviceName) + '</div>',
         '</div>',
@@ -563,11 +563,11 @@ function pageAdminLogin(el) {
     '<form id="admin-login-form" novalidate>',
     '<div class="form-group" style="margin-bottom:16px">',
     '<label class="form-label" for="al-code">Demo Passcode</label>',
-    '<input class="form-input" id="al-code" type="password" placeholder="••••" autocomplete="off" />',
+    '<input class="ux4g-input ux4g-input-m" id="al-code" type="password" placeholder="••••" autocomplete="off" />',
     '<div class="form-hint">Passcode for this demo: <code>admin</code></div>',
     '</div>',
     '<div id="al-error" style="margin-bottom:10px"></div>',
-    '<button type="submit" id="al-submit" class="btn btn-primary" style="width:100%">Login &rarr;</button>',
+    '<button type="submit" id="al-submit" class="ux4g-btn ux4g-btn-primary ux4g-btn-m" style="width:100%">Login &rarr;</button>',
     '</form>',
     '</div>',
   ].join("");
@@ -638,10 +638,10 @@ function pageAdminQueue(el) {
           '<td style="font-size:0.75rem;color:var(--color-muted)">' + (t.notifyWhatsApp ? "WA " : "") + (t.notifySms ? "SMS" : "") + (!t.notifyWhatsApp && !t.notifySms ? "—" : "") + '</td>',
           '<td style="white-space:nowrap">',
           calledRow ? [
-            '<button class="btn btn-success btn-sm aq-serve" data-id="' + t.id + '" style="margin-right:4px">Served</button>',
-            '<button class="btn btn-warning btn-sm aq-noshow" data-id="' + t.id + '" style="margin-right:4px">No-Show</button>',
-            '<button class="btn btn-danger btn-sm aq-unable" data-id="' + t.id + '">Unable...</button>',
-          ].join("") : (t.status === "NO_SHOW" ? '<button class="btn btn-primary btn-sm aq-recall" data-id="' + t.id + '">&#8635; Recall (Demo)</button>' : ""),
+            '<button class="ux4g-btn ux4g-btn-primary ux4g-btn-s aq-serve" data-id="' + t.id + '" style="margin-right:4px">Served</button>',
+            '<button class="ux4g-btn ux4g-btn-outline-neutral ux4g-btn-s aq-noshow" data-id="' + t.id + '" style="margin-right:4px">No-Show</button>',
+            '<button class="ux4g-btn ux4g-btn-outline-danger ux4g-btn-s aq-unable" data-id="' + t.id + '">Unable...</button>',
+          ].join("") : (t.status === "NO_SHOW" ? '<button class="ux4g-btn ux4g-btn-outline-neutral ux4g-btn-s aq-recall" data-id="' + t.id + '">&#8635; Recall (Demo)</button>' : ""),
           '</td>',
           '</tr>',
         ].join("");
@@ -663,16 +663,16 @@ function pageAdminQueue(el) {
         '<div class="ql-section__actions">',
         // Counter control
         '<div style="display:flex;align-items:center;gap:6px;font-size:0.82rem">',
-        '<button class="btn btn-secondary btn-sm aq-counter-minus" data-svc="' + svc.id + '">&#8722;</button>',
+        '<button class="ux4g-btn ux4g-btn-outline-neutral ux4g-btn-s aq-counter-minus" data-svc="' + svc.id + '">&#8722;</button>',
         '<span class="ql-nums" style="font-weight:700;min-width:20px;text-align:center">' + svc.activeCounters + '</span>',
-        '<button class="btn btn-secondary btn-sm aq-counter-plus" data-svc="' + svc.id + '">&#43;</button>',
+        '<button class="ux4g-btn ux4g-btn-outline-neutral ux4g-btn-s aq-counter-plus" data-svc="' + svc.id + '">&#43;</button>',
         '<span style="color:var(--color-muted)">counter' + (svc.activeCounters !== 1 ? "s" : "") + '</span>',
         '</div>',
         '<div style="display:flex;flex-direction:column;align-items:flex-end">',
         issued.length > 0 ?
           (busy
-            ? '<button class="btn btn-primary btn-sm aq-call-next" data-svc="' + svc.id + '" disabled>&#128221; Call Next</button>'
-            : '<button class="btn btn-primary btn-sm aq-call-next" data-svc="' + svc.id + '">&#128221; Call Next</button>')
+            ? '<button class="ux4g-btn ux4g-btn-primary ux4g-btn-s aq-call-next" data-svc="' + svc.id + '" disabled>&#128221; Call Next</button>'
+            : '<button class="ux4g-btn ux4g-btn-primary ux4g-btn-s aq-call-next" data-svc="' + svc.id + '">&#128221; Call Next</button>')
           : '<span style="font-size:0.78rem;color:var(--color-muted)">No tokens waiting</span>',
         (issued.length > 0 && busy) ? '<div style="font-size:0.75rem;color:var(--color-text-soft);margin-top:4px;max-width:280px;text-align:right;line-height:1.2">All counters are busy. Mark a called token as Served/No-Show/Unable to process to free a counter.</div>' : '',
         '</div>',
@@ -699,10 +699,10 @@ function pageAdminQueue(el) {
 
       // Top action bar
       '<div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:20px">',
-      '<button id="aq-reminder-btn" class="btn btn-primary">&#9881;&#65039; Run Reminder Check Now</button>',
-      '<button id="aq-reset-btn"    class="btn btn-secondary">&#9851;&#65039; Seed / Reset Demo</button>',
-      '<a href="#/admin/notifications"  class="btn btn-secondary">&#128241; Notification Log</a>',
-      '<button id="aq-logout-btn"   class="btn btn-danger">Logout</button>',
+      '<button id="aq-reminder-btn" class="ux4g-btn ux4g-btn-primary ux4g-btn-m">&#9881;&#65039; Run Reminder Check Now</button>',
+      '<button id="aq-reset-btn"    class="ux4g-btn ux4g-btn-outline-neutral ux4g-btn-m">&#9851;&#65039; Seed / Reset Demo</button>',
+      '<a href="#/admin/notifications"  class="ux4g-btn ux4g-btn-outline-neutral ux4g-btn-m">&#128241; Notification Log</a>',
+      '<button id="aq-logout-btn"   class="ux4g-btn ux4g-btn-outline-danger ux4g-btn-m">Logout</button>',
       '</div>',
 
       // KPI row
@@ -805,8 +805,8 @@ function pageAdminQueue(el) {
           '<option value="Overdue fees">Overdue fees</option>',
           '<option value="Other">Other</option>',
           '</select>',
-          '<button class="btn btn-danger btn-sm aq-unable-confirm" data-id="' + btn.dataset.id + '">OK</button>',
-          '<button class="btn btn-secondary btn-sm aq-unable-cancel" style="margin-left:4px">Cancel</button>'
+          '<button class="ux4g-btn ux4g-btn-danger ux4g-btn-s aq-unable-confirm" data-id="' + btn.dataset.id + '">OK</button>',
+          '<button class="ux4g-btn ux4g-btn-outline-neutral ux4g-btn-s aq-unable-cancel" style="margin-left:4px">Cancel</button>'
         ].join("");
 
         parent.querySelector(".aq-unable-cancel").addEventListener("click", function () {
@@ -876,8 +876,8 @@ function pageAdminNotifications(el) {
       '</div>',
 
       '<div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:16px">',
-      '<a href="#/admin/queue" class="btn btn-secondary btn-sm">&larr; Queue</a>',
-      '<button id="an-reminder-btn" class="btn btn-primary btn-sm">&#9881;&#65039; Run Reminder Check Now</button>',
+      '<a href="#/admin/queue" class="ux4g-btn ux4g-btn-outline-neutral ux4g-btn-s">&larr; Queue</a>',
+      '<button id="an-reminder-btn" class="ux4g-btn ux4g-btn-primary ux4g-btn-s">&#9881;&#65039; Run Reminder Check Now</button>',
       '</div>',
 
       // KPI row
@@ -997,7 +997,7 @@ function renderCountersRow() {
     '<section class="ql-section" id="blive-counters" aria-label="Counter status">',
     '<div class="ql-section__header">',
     '<h2 class="ql-section__title">&#128203; Counter Status</h2>',
-    '<a href="#/admin/queue" class="btn btn-sm btn-secondary">Admin Queue &rarr;</a>',
+    '<a href="#/admin/queue" class="ux4g-btn ux4g-btn-outline-neutral ux4g-btn-s">Admin Queue &rarr;</a>',
     '</div>',
     '<div class="ql-section__body"><div class="blive-counters-grid">' + tiles + '</div></div>',
     '</section>',
@@ -1012,7 +1012,7 @@ function renderInlineTokenForm() {
     '<section class="ql-section" id="blive-take-token" aria-label="Take a token">',
     '<div class="ql-section__header">',
     '<h2 class="ql-section__title">&#127247; Join the Queue</h2>',
-    '<a href="#/take-token" class="btn btn-sm btn-primary" id="blive-full-form-link">Full form &rarr;</a>',
+    '<a href="#/take-token" class="ux4g-btn ux4g-btn-primary ux4g-btn-s" id="blive-full-form-link">Full form &rarr;</a>',
     '</div>',
     '<div class="ql-section__body">',
     '<form id="blive-token-form" class="blive-entry-form" novalidate autocomplete="off">',
@@ -1027,7 +1027,7 @@ function renderInlineTokenForm() {
     '</div>',
     '<div class="form-group" style="flex:1">',
     '<label class="form-label" style="visibility:hidden">Action</label>',
-    '<button type="submit" id="bl-submit" class="btn btn-primary" style="width:100%">Get Token</button>',
+    '<button type="submit" id="bl-submit" class="ux4g-btn ux4g-btn-primary ux4g-btn-m" style="width:100%">Get Token</button>',
     '</div>',
     '</div>',
     '<div class="blive-entry-form__checkboxes">',
@@ -1102,7 +1102,7 @@ function renderNotifSummary() {
     '<div class="ql-section__header">',
     '<h2 class="ql-section__title">&#128241; Notification Delivery</h2>',
     '<div class="ql-section__actions">',
-    '<a href="#/admin/notifications" class="btn btn-sm btn-secondary" id="blive-full-log-link">Full log &rarr;</a>',
+    '<a href="#/admin/notifications" class="ux4g-btn ux4g-btn-outline-neutral ux4g-btn-s" id="blive-full-log-link">Full log &rarr;</a>',
     '</div>',
     '</div>',
     '<div class="ql-section__body">',
@@ -1361,7 +1361,7 @@ function page404(el) {
     'Route <code style="background:rgba(255,255,255,0.07);padding:2px 6px;border-radius:4px">' + esc(getRoute()) + '</code> does not exist.',
     '</p>',
     '</div>',
-    '<a href="#/" class="btn btn-primary">&larr; Back to Home</a>',
+    '<a href="#/" class="ux4g-btn ux4g-btn-primary ux4g-btn-m">&larr; Back to Home</a>',
     '</div>',
   ].join("");
 }
