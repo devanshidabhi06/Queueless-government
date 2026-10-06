@@ -74,6 +74,68 @@ function renderRoute() {
   window.scrollTo({ top: 0, behavior: "instant" });
 }
 
+function buildDisplaySnapshot() {
+  var state = Engine.getState();
+  var svcs = Engine.getOffices()[0] ? Engine.getServices(Engine.getOffices()[0].id) : [];
+
+  var servicesData = svcs.map(function(s) {
+    var q = Engine.getQueue(s.id);
+    var nowServing = q.find(function(t) { return t.status === "CALLED"; });
+    var nextUp = q.find(function(t) { return t.status === "ISSUED" && (t.joinMode === "ON_SITE" || !!t.checkedInAt); });
+    var reservedCount = q.filter(function(t) { return t.status === "RESERVED"; }).length;
+
+    var servingPayload = null;
+    if (nowServing) {
+      var seq = 0;
+      var m = nowServing.tokenNumber.match(/\d+$/);
+      if (m) {
+        seq = parseInt(m[0], 10);
+      } else {
+        for (var i = 0; i < nowServing.id.length; i++) seq += nowServing.id.charCodeAt(i);
+      }
+      var cNum = (seq % Math.max(1, s.activeCounters)) + 1;
+      
+      servingPayload = {
+        tokenNumber: nowServing.tokenNumber,
+        counterNum: cNum
+      };
+    }
+
+    return {
+      id: s.id,
+      name: s.name,
+      activeCounters: s.activeCounters,
+      nowServing: servingPayload,
+      nextUpToken: nextUp ? nextUp.tokenNumber : null,
+      reservedCount: reservedCount
+    };
+  });
+
+  var recent = state.tokens
+    .filter(function (t) { return t.calledAt != null; })
+    .sort(function (a, b) { return new Date(b.calledAt) - new Date(a.calledAt); })
+    .slice(0, 5)
+    .map(function(t) {
+      var s = svcs.find(function (x) { return x.id === t.serviceId; });
+      return {
+        tokenNumber: t.tokenNumber,
+        status: t.status,
+        serviceName: s ? s.name : "Unknown",
+        calledAt: t.calledAt
+      };
+    });
+
+  return {
+    updatedAt: Date.now(),
+    services: servicesData,
+    recent: recent
+  };
+}
+
+function triggerSync() {
+  if (window.qlSync) window.qlSync.publish(buildDisplaySnapshot());
+}
+
 window.addEventListener("hashchange", renderRoute);
 document.addEventListener("DOMContentLoaded", renderRoute);
 
@@ -342,7 +404,7 @@ function pageTakeToken(el) {
     };
 
     var tok;
-    try { tok = Engine.takeToken(opts); }
+    try { tok = Engine.takeToken(opts); triggerSync(); }
     catch (err) {
       result.innerHTML = [
         '<div id="tw-error-summary" class="alert alert-error" role="alert" tabindex="-1" aria-labelledby="tw-error-summary-title">',
@@ -533,6 +595,7 @@ function pageTokenStatus(el) {
         if (!confirm("Cancel token " + (Engine.getToken(tokenId) || {}).tokenNumber + "?")) return;
         try {
           Engine.cancel(tokenId);
+          triggerSync();
           sessionStorage.removeItem("ql_last_id");
         } catch (err) { /* ignore */ }
         render(null);
@@ -544,6 +607,7 @@ function pageTokenStatus(el) {
       chBtn.addEventListener("click", function () {
         try {
           Engine.checkIn(tokenId);
+          triggerSync();
         } catch (err) { alert(err.message); }
         render(tokenId);
       });
@@ -709,9 +773,6 @@ function pageAdminQueue(el) {
       '<a href="#/display" target="_blank" rel="noopener" class="nav-link" style="color:#0369a1;font-weight:600">Display Board &#8599;</a>',
       '<button id="aq-logout-btn" class="ux4g-btn ux4g-btn-outline-danger ux4g-btn-s" style="margin-left:auto">Logout</button>',
       '</div>',
-      '<div style="font-size:0.75rem;color:#475569;margin-top:8px;">',
-      'Note: in this prototype, the display board in a new tab does not sync with this tab yet.',
-      '</div>',
       '</nav>',
 
       // Top action bar
@@ -760,6 +821,7 @@ function pageAdminQueue(el) {
     el.querySelector("#aq-reset-btn").addEventListener("click", function () {
       if (!confirm("Reset all demo data? This clears tokens, notifications, and audit log.")) return;
       Engine.reset();
+      triggerSync();
       render();
     });
 
@@ -773,7 +835,7 @@ function pageAdminQueue(el) {
         var svcId = btn.dataset.svc;
         var tok = Engine.callNext(svcId);
         if (!tok) return;
-        Engine.runReminderCheck(); // auto-check after queue moves
+        Engine.runReminderCheck(); triggerSync(); // auto-check after queue moves
         render();
       });
     });
@@ -781,7 +843,7 @@ function pageAdminQueue(el) {
     el.querySelectorAll(".aq-serve").forEach(function (btn) {
       btn.addEventListener("click", function () {
         Engine.serve(btn.dataset.id);
-        Engine.runReminderCheck();
+        Engine.runReminderCheck(); triggerSync();
         render();
       });
     });
@@ -789,7 +851,7 @@ function pageAdminQueue(el) {
     el.querySelectorAll(".aq-noshow").forEach(function (btn) {
       btn.addEventListener("click", function () {
         Engine.noShow(btn.dataset.id);
-        Engine.runReminderCheck();
+        Engine.runReminderCheck(); triggerSync();
         render();
       });
     });
@@ -798,7 +860,7 @@ function pageAdminQueue(el) {
       btn.addEventListener("click", function () {
         try {
           Engine.recall(btn.dataset.id);
-          Engine.runReminderCheck();
+          Engine.runReminderCheck(); triggerSync();
           render();
         } catch (e) {
           alert(e.message);
@@ -832,7 +894,7 @@ function pageAdminQueue(el) {
           var reason = parent.querySelector(".aq-unable-reason").value;
           try {
             Engine.unableToProcess(btn.dataset.id, reason);
-            Engine.runReminderCheck();
+            Engine.runReminderCheck(); triggerSync();
             render();
           } catch (e) { alert(e.message); }
         });
@@ -840,10 +902,10 @@ function pageAdminQueue(el) {
     });
 
     el.querySelectorAll(".aq-counter-plus").forEach(function (btn) {
-      btn.addEventListener("click", function () { Engine.adjustCounters(btn.dataset.svc, +1); render(); });
+      btn.addEventListener("click", function () { Engine.adjustCounters(btn.dataset.svc, +1); triggerSync(); render(); });
     });
     el.querySelectorAll(".aq-counter-minus").forEach(function (btn) {
-      btn.addEventListener("click", function () { Engine.adjustCounters(btn.dataset.svc, -1); render(); });
+      btn.addEventListener("click", function () { Engine.adjustCounters(btn.dataset.svc, -1); triggerSync(); render(); });
     });
   }
 
@@ -896,9 +958,6 @@ function pageAdminNotifications(el) {
       '<a href="#/admin/notifications" class="nav-link" aria-current="page" style="color:#0369a1;font-weight:600">Notifications</a>',
       '<a href="#/display" target="_blank" rel="noopener" class="nav-link" style="color:#0369a1;font-weight:600">Display Board &#8599;</a>',
       '</div>',
-      '<div style="font-size:0.75rem;color:#475569;margin-top:8px;">',
-      'Note: in this prototype, the display board in a new tab does not sync with this tab yet.',
-      '</div>',
       '</nav>',
 
       '<div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:16px">',
@@ -938,6 +997,7 @@ function pageAdminNotifications(el) {
 
     el.querySelector("#an-reminder-btn").addEventListener("click", function () {
       Engine.runReminderCheck();
+      triggerSync();
       render();
     });
   }
@@ -1222,7 +1282,7 @@ function pageDirectionBLive(el) {
       consentGiven: el.querySelector("#bl-consent").checked,
     };
     var tok;
-    try { tok = Engine.takeToken(opts); }
+    try { tok = Engine.takeToken(opts); triggerSync(); }
     catch (err) {
       result.innerHTML = '<div class="alert alert-error">' + esc(err.message) + '</div>';
       return;
@@ -1253,49 +1313,27 @@ function pageDirectionBLive(el) {
    PUBLIC DISPLAY BOARD
 ================================================================ */
 function pageDisplay(el) {
-  var timerId = null;
+  function renderFromSnapshot(snapshot) {
+    if (getRoute() !== "/display") return;
 
-  function render() {
-    if (getRoute() !== "/display") {
-      clearInterval(timerId);
-      return;
-    }
-
-    var state = Engine.getState();
-    var svcs = Engine.getOffices()[0] ? Engine.getServices(Engine.getOffices()[0].id) : [];
-
-    var cardsHtml = svcs.map(function (s) {
-      var q = Engine.getQueue(s.id);
-      var nowServing = q.find(function (t) { return t.status === "CALLED"; });
-      var nextUp = q.find(function (t) { return t.status === "ISSUED" && (t.joinMode === "ON_SITE" || !!t.checkedInAt); });
-
-      var reservedCount = q.filter(function (t) { return t.status === "RESERVED"; }).length;
-
+    var cardsHtml = snapshot.services.map(function(s) {
       var servingText = '<span style="font-size:5rem;line-height:1;font-weight:800;color:var(--color-muted)">&mdash;</span>';
       var counterHtml = "";
-      if (nowServing) {
-        servingText = '<span class="ql-nums" style="font-size:5.5rem;line-height:1;font-weight:800;color:var(--color-text)">' + esc(nowServing.tokenNumber) + '</span>';
+      if (s.nowServing) {
+        servingText = '<span class="ql-nums" style="font-size:5.5rem;line-height:1;font-weight:800;color:var(--color-text)">' + esc(s.nowServing.tokenNumber) + '</span>';
         if (s.activeCounters >= 1) {
-          var seq = 0;
-          var m = nowServing.tokenNumber.match(/\d+$/);
-          if (m) {
-            seq = parseInt(m[0], 10);
-          } else {
-            for (var i = 0; i < nowServing.id.length; i++) seq += nowServing.id.charCodeAt(i);
-          }
-          var cNum = (seq % s.activeCounters) + 1;
-          counterHtml = '<div style="margin-top:16px;font-size:1.5rem;font-weight:600;color:var(--color-text-soft)">Proceed to Counter <strong class="ql-nums" style="color:var(--color-text);font-size:2rem">' + cNum + '</strong></div>';
+          counterHtml = '<div style="margin-top:16px;font-size:1.5rem;font-weight:600;color:var(--color-text-soft)">Proceed to Counter <strong class="ql-nums" style="color:var(--color-text);font-size:2rem">' + s.nowServing.counterNum + '</strong></div>';
         }
       }
 
-      var nextText = nextUp
-        ? '<span class="ql-nums" style="font-size:1.1rem;font-weight:700;color:var(--color-text-soft)">' + esc(nextUp.tokenNumber) + '</span>'
+      var nextText = s.nextUpToken
+        ? '<span class="ql-nums" style="font-size:1.1rem;font-weight:700;color:var(--color-text-soft)">' + esc(s.nextUpToken) + '</span>'
         : '<span style="color:var(--color-muted)">&mdash;</span>';
 
       var waitingCheckInHtml = "";
-      if (reservedCount > 0) {
-        waitingCheckInHtml = '<div style="font-size:0.8rem;color:var(--color-muted);margin-top:2px">Waiting to check in: <strong class="ql-nums" style="color:var(--color-warning)">' + reservedCount + '</strong></div>';
-        if (!nextUp) {
+      if (s.reservedCount > 0) {
+        waitingCheckInHtml = '<div style="font-size:0.8rem;color:var(--color-muted);margin-top:2px">Waiting to check in: <strong class="ql-nums" style="color:var(--color-warning)">' + s.reservedCount + '</strong></div>';
+        if (!s.nextUpToken) {
           waitingCheckInHtml += '<div style="font-size:0.75rem;color:var(--color-text-soft);margin-top:4px;font-style:italic">Remote tokens must check in to be eligible.</div>';
         }
       }
@@ -1320,16 +1358,9 @@ function pageDisplay(el) {
       ].join("");
     }).join("");
 
-    var recent = state.tokens
-      .filter(function (t) { return t.calledAt != null; })
-      .sort(function (a, b) { return new Date(b.calledAt) - new Date(a.calledAt); })
-      .slice(0, 5);
-
-    var recentHtml = recent.length === 0
+    var recentHtml = snapshot.recent.length === 0
       ? '<div style="color:var(--color-muted);font-size:0.9rem;text-align:center;padding:24px 0">No tokens called recently.</div>'
-      : recent.map(function (t) {
-        var s = svcs.find(function (x) { return x.id === t.serviceId; });
-        var sName = s ? s.name : "Unknown";
+      : snapshot.recent.map(function(t) {
         return [
           '<div style="display:flex;align-items:center;justify-content:space-between;padding:16px 24px;border-bottom:1px solid var(--color-border);background:var(--color-bg)">',
           '<div style="display:flex;align-items:center;gap:16px">',
@@ -1337,7 +1368,7 @@ function pageDisplay(el) {
           badge(t.status),
           '</div>',
           '<div style="text-align:right">',
-          '<div style="font-size:1.1rem;font-weight:600;color:var(--color-text-soft)">' + esc(sName) + '</div>',
+          '<div style="font-size:1.1rem;font-weight:600;color:var(--color-text-soft)">' + esc(t.serviceName) + '</div>',
           '<div class="ql-nums" style="font-size:0.9rem;color:var(--color-muted)">Called: ' + fmtTime(t.calledAt) + '</div>',
           '</div>',
           '</div>'
@@ -1349,11 +1380,9 @@ function pageDisplay(el) {
       '<h1 class="ql-pagehead__title" style="font-size:clamp(1.75rem, 5vw, 2.5rem);margin-bottom:8px">Live Queue Display</h1>',
       '<p class="ql-pagehead__subtitle" style="margin:0 auto;font-size:1rem;color:var(--color-brand)">Please proceed to the counter when your token is called.</p>',
       '</div>',
-
       '<div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(400px, 1fr));gap:32px;margin-bottom:48px;max-width:1400px;margin-left:auto;margin-right:auto">',
       cardsHtml,
       '</div>',
-
       '<div class="ql-section" style="max-width:1400px;margin:0 auto 40px auto;border:2px solid var(--color-border);background:var(--color-card)">',
       '<div class="ql-section__header" style="border-bottom:2px solid var(--color-border)">',
       '<h2 class="ql-section__title" style="font-size:1.5rem">Recently Called</h2>',
@@ -1362,15 +1391,26 @@ function pageDisplay(el) {
       recentHtml,
       '</div>',
       '</div>',
-
       '<div style="text-align:center;font-size:0.8rem;color:var(--color-muted);padding:24px 0;border-top:1px solid var(--color-border)">',
       '<strong>&#9888; Hackathon Prototype &mdash; Not an official Government website.</strong>',
       '</div>'
     ].join("");
   }
 
-  render();
-  timerId = setInterval(render, 1500);
+  if (window.qlSync) {
+    window.qlSync.init({
+      onSnapshot: function(snap) {
+        if (getRoute() === "/display") {
+          renderFromSnapshot(snap);
+        }
+      }
+    });
+    // Request broadcast or load from localStorage
+    window.qlSync.request();
+  }
+  
+  // Render immediately with local Engine state as initial payload
+  renderFromSnapshot(buildDisplaySnapshot());
 }
 
 /* ================================================================
