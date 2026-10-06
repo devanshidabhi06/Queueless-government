@@ -1635,3 +1635,30 @@ html.tw-high-contrast .tw-status-tracker__item.is-current .tw-status-tracker__no
 html.tw-high-contrast .tw-status-tracker__item.is-current .tw-status-tracker__node {
   border-width: 4px;
 }
+
+/* ── Phase 0.65: Admin Queue Ledger ────────────────────────────── */
+.tw-admin-ledger {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tw-admin-ledger th,
+.tw-admin-ledger td {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.tw-admin-ledger tbody tr:hover {
+  background-color: var(--color-bg);
+}
+
+html.tw-high-contrast .tw-admin-ledger th,
+html.tw-high-contrast .tw-admin-ledger td {
+  border-bottom: 1px solid #fff;
+  color: #fff;
+}
+html.tw-high-contrast .tw-admin-ledger thead {
+  border-bottom: 2px solid #fff;
+}
+html.tw-high-contrast .tw-admin-ledger tbody tr:hover {
+  background-color: #222; /* just enough to be distinct but text remains readable */
+}
