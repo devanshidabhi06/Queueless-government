@@ -73,69 +73,73 @@
     Last updated: <strong>Sep 30, 2026</strong>.
   </div>
 
-  <!-- ===== ACCESSIBILITY TOOLBAR ===== -->
-  <div id="a11y-toolbar" class="a11y-toolbar" role="region" aria-label="Accessibility options">
-    <div class="a11y-toolbar__inner">
-      <span class="a11y-toolbar__label" aria-hidden="true">Accessibility:</span>
-      <button id="a11y-text-size" class="a11y-btn" type="button" aria-pressed="false"
-        title="Toggle larger text size (stored in browser)">
-        &#65;&#8593; Text Size
-      </button>
-      <button id="a11y-contrast" class="a11y-btn" type="button" aria-pressed="false"
-        title="Toggle high-contrast mode (bg black, text white, links yellow)">
-        &#9680; High Contrast
-      </button>
-      <button id="a11y-motion" class="a11y-btn" type="button" aria-pressed="false"
-        title="Disable animations and transitions">
-        &#9208;&#65039; Reduce Motion
-      </button>
-    </div>
-  </div>
-
-  <!-- ===== GOVERNMENT UTILITY STRIP (DBIM/NIC portal pattern) ===== -->
-  <div id="gov-utility-strip" class="gov-utility-strip" role="navigation" aria-label="Utility links" style="background-color: var(--color-card);">
-    <div class="gov-utility-strip__inner" style="display:flex;justify-content:space-between;padding:var(--space-1) var(--space-2);">
-      <div class="gov-utility-strip__links" aria-label="Quick utility links">
-        <a href="#app-root" class="gov-utility-link">Skip to main content</a>
-        <span class="gov-utility-sep" aria-hidden="true">|</span>
-        <a href="#a11y-toolbar" class="gov-utility-link">Accessibility Options</a>
-        <span class="gov-utility-sep" aria-hidden="true">|</span>
-        <a href="#/help" class="gov-utility-link">Help</a>
+  <!-- ===== LAYER 1: UNIFIED UTILITY STRIP ===== -->
+  <div id="gov-utility-strip" class="gov-utility-strip" role="navigation" aria-label="Utility links" style="background-color:#1e293b; color:#f8fafc;">
+    <div class="gov-utility-strip__inner" style="display:flex; justify-content:space-between; align-items:center; padding:var(--space-1) var(--space-2); max-width:1200px; margin:0 auto; flex-wrap:wrap; gap:12px;">
+      
+      <div class="gov-utility-strip__links" aria-label="Quick utility links" style="display:flex; align-items:center; gap:12px;">
+        <a href="#/" class="gov-utility-link" style="color:#f8fafc; font-weight:600;">Home</a>
+        <span class="gov-utility-sep" aria-hidden="true" style="opacity:0.5;">|</span>
+        <a href="#app-root" class="gov-utility-link" style="color:#f8fafc; font-weight:600;">Skip to main content</a>
+        <span class="gov-utility-sep" aria-hidden="true" style="opacity:0.5;">|</span>
+        <a href="#/help" class="gov-utility-link" style="color:#f8fafc; font-weight:600;">Screen Reader Access</a>
       </div>
-      <div>
-        <a href="#/admin/login" id="nav-staff-link" class="gov-utility-link">Staff login</a>
+      
+      <div style="display:flex; align-items:center; gap:16px;">
+        <!-- ===== ACCESSIBILITY TOOLBAR (Moved inside utility strip) ===== -->
+        <div id="a11y-toolbar" class="a11y-toolbar" role="region" aria-label="Accessibility options" style="background:transparent; border:none; padding:0; box-shadow:none;">
+          <div class="a11y-toolbar__inner" style="display:flex; align-items:center; gap:8px;">
+            <span class="a11y-toolbar__label" aria-hidden="true" style="color:#cbd5e1;">Accessibility:</span>
+            <button id="a11y-text-size" class="a11y-btn" type="button" aria-pressed="false" title="Toggle larger text size" style="color:#f8fafc; border-color:rgba(255,255,255,0.2);">&#65;&#8593; Text Size</button>
+            <button id="a11y-contrast" class="a11y-btn" type="button" aria-pressed="false" title="Toggle high-contrast mode" style="color:#f8fafc; border-color:rgba(255,255,255,0.2);">&#9680; High Contrast</button>
+            <button id="a11y-motion" class="a11y-btn" type="button" aria-pressed="false" title="Disable animations" style="color:#f8fafc; border-color:rgba(255,255,255,0.2);">&#9208;&#65039; Reduce Motion</button>
+          </div>
+        </div>
+        <span class="gov-utility-sep" aria-hidden="true" style="opacity:0.5; color:#cbd5e1;">|</span>
+        <a href="#/admin/login" id="nav-staff-link" class="gov-utility-link" style="color:#fca5a5; font-weight:600;">Staff login</a>
       </div>
     </div>
   </div>
 
-  <!-- ===== HEADER ===== -->
-  <header id="app-header" class="app-header" style="background-color: #ffffff; color: #1e293b; border-bottom: 1px solid #e2e8f0;">
-    <div class="header-inner" style="padding:var(--space-2);">
-      <a href="#/" id="logo-link" class="logo" aria-label="QueueLess home" style="color:#1e293b; font-weight:700; font-size:1.25rem;">
-        <span class="logo-text">QueueLess</span>
-      </a>
+  <!-- ===== LAYER 2 & 3: IDENTITY & NAV ===== -->
+  <header id="app-header" class="app-header" style="background:transparent; border-bottom:none; padding:0; position:static;">
+    
+    <!-- Layer 2: Identity Block (White background) -->
+    <div style="background-color:#ffffff; padding:24px 32px;">
+      <div style="max-width:1200px; margin:0 auto; display:flex; justify-content:space-between; align-items:center;">
+        <a href="#/" id="logo-link" class="logo" aria-label="QueueLess home" style="display:flex; align-items:center; gap:16px; text-decoration:none;">
+          <div style="font-size:2.5rem; line-height:1; color:#1e293b;">&#9638;</div>
+          <div style="display:flex; flex-direction:column; gap:4px;">
+            <span class="logo-text" style="color:#1e293b; font-weight:800; font-size:2rem; line-height:1; letter-spacing:-0.5px;">QueueLess</span>
+            <span style="color:#475569; font-size:0.9rem; font-weight:600; text-transform:uppercase; letter-spacing:0.05em;">Virtual queue &amp; display board (prototype)</span>
+          </div>
+        </a>
 
-      <nav id="main-nav" class="main-nav" aria-label="Primary navigation">
-        <a href="#/" id="nav-home" class="nav-link" data-route="/" style="color:#475569;">Home</a>
-        <a href="#/take-token" id="nav-take-token" class="nav-link" data-route="/take-token" style="color:#475569;">Join Queue</a>
-        <a href="#/token-status" id="nav-status" class="nav-link" data-route="/token-status" style="color:#475569;">Status</a>
-        <a href="#/help" id="nav-help" class="nav-link" data-route="/help" style="color:#475569;">Help</a>
+        <!-- Mobile hamburger -->
+        <button id="mobile-menu-btn" class="mobile-menu-btn" aria-label="Toggle navigation menu" aria-expanded="false">
+          <span class="hamburger-line" style="background-color:#1e293b;"></span>
+          <span class="hamburger-line" style="background-color:#1e293b;"></span>
+          <span class="hamburger-line" style="background-color:#1e293b;"></span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Layer 3: Primary Nav Bar (Gradient) -->
+    <div class="ql-primary-nav-bar" style="background: linear-gradient(135deg, #0b1727 0%, #171738 100%); padding: 12px 32px;">
+      <nav id="main-nav" class="main-nav" aria-label="Primary navigation" style="max-width:1200px; margin:0 auto; display:flex; gap:8px;">
+        <a href="#/" id="nav-home" class="nav-link" data-route="/" style="color:#ffffff; font-weight:600; padding:8px 16px;">Home</a>
+        <a href="#/take-token" id="nav-take-token" class="nav-link" data-route="/take-token" style="color:#ffffff; font-weight:600; padding:8px 16px;">Join Queue</a>
+        <a href="#/token-status" id="nav-status" class="nav-link" data-route="/token-status" style="color:#ffffff; font-weight:600; padding:8px 16px;">Status</a>
+        <a href="#/help" id="nav-help" class="nav-link" data-route="/help" style="color:#ffffff; font-weight:600; padding:8px 16px;">Help</a>
       </nav>
-
-      <!-- Mobile hamburger -->
-      <button id="mobile-menu-btn" class="mobile-menu-btn" aria-label="Toggle navigation menu" aria-expanded="false">
-        <span class="hamburger-line" style="background-color:#475569;"></span>
-        <span class="hamburger-line" style="background-color:#475569;"></span>
-        <span class="hamburger-line" style="background-color:#475569;"></span>
-      </button>
     </div>
 
     <!-- Mobile nav drawer -->
-    <nav id="mobile-nav" class="mobile-nav hidden" aria-label="Mobile navigation" style="background-color:#ffffff;">
-      <a href="#/" id="mobile-nav-home" class="mobile-nav-link" data-route="/" style="color:#475569;">Home</a>
-      <a href="#/take-token" id="mobile-nav-take-token" class="mobile-nav-link" data-route="/take-token" style="color:#475569;">Join Queue</a>
-      <a href="#/token-status" id="mobile-nav-status" class="mobile-nav-link" data-route="/token-status" style="color:#475569;">Status</a>
-      <a href="#/help" id="mobile-nav-help" class="mobile-nav-link" data-route="/help" style="color:#475569;">Help</a>
+    <nav id="mobile-nav" class="mobile-nav hidden" aria-label="Mobile navigation" style="background-color:#171738;">
+      <a href="#/" id="mobile-nav-home" class="mobile-nav-link" data-route="/" style="color:#ffffff;">Home</a>
+      <a href="#/take-token" id="mobile-nav-take-token" class="mobile-nav-link" data-route="/take-token" style="color:#ffffff;">Join Queue</a>
+      <a href="#/token-status" id="mobile-nav-status" class="mobile-nav-link" data-route="/token-status" style="color:#ffffff;">Status</a>
+      <a href="#/help" id="mobile-nav-help" class="mobile-nav-link" data-route="/help" style="color:#ffffff;">Help</a>
     </nav>
   </header>
 
