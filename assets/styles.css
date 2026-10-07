@@ -1662,3 +1662,39 @@ html.tw-high-contrast .tw-admin-ledger thead {
 html.tw-high-contrast .tw-admin-ledger tbody tr:hover {
   background-color: #222; /* just enough to be distinct but text remains readable */
 }
+/* High Contrast Overrides for 4-Layer Header */
+html.tw-high-contrast .gov-utility-strip,
+html.tw-high-contrast #app-header > div:nth-child(1),
+html.tw-high-contrast .ql-primary-nav-bar,
+html.tw-high-contrast #mobile-nav {
+  background: #000 !important;
+  color: #fff !important;
+  border-bottom: 1px solid #fff !important;
+}
+
+html.tw-high-contrast .gov-utility-strip *,
+html.tw-high-contrast #app-header > div:nth-child(1) *,
+html.tw-high-contrast .ql-primary-nav-bar * {
+  color: #fff !important;
+  border-color: #fff !important;
+}
+
+html.tw-high-contrast .gov-utility-link,
+html.tw-high-contrast .nav-link,
+html.tw-high-contrast .mobile-nav-link,
+html.tw-high-contrast .a11y-btn {
+  color: #ff0 !important;
+}
+
+html.tw-high-contrast .a11y-btn:focus-visible,
+html.tw-high-contrast .gov-utility-link:focus-visible,
+html.tw-high-contrast .nav-link:focus-visible {
+  outline: 3px solid #ff0 !important;
+}
+
+html.tw-high-contrast .logo-text,
+html.tw-high-contrast #logo-link span,
+html.tw-high-contrast #logo-link div {
+  color: #fff !important;
+}
+
