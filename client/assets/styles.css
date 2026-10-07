@@ -129,8 +129,7 @@ html.tw-high-contrast *:focus-visible {
 .a11y-toolbar {
   background: var(--color-card);
   border-bottom: 1px solid var(--color-border);
-  position: sticky;
-  top: 28px;                /* sits directly under disclaimer bar */
+  position: static;
   z-index: 45;
 }
 
@@ -207,7 +206,7 @@ html.tw-high-contrast *:focus-visible {
   background: #0f1f36;         /* slightly darker than main bg — structural cue */
   border-bottom: 1px solid var(--color-border);
   position: sticky;
-  top: 56px;                   /* below disclaimer(28) + a11y-toolbar(28) */
+  top: 28px;                   /* below disclaimer(28) */
   z-index: 42;
 }
 
@@ -269,7 +268,7 @@ html.tw-high-contrast *:focus-visible {
   -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--color-border);
   position: sticky;
-  top: 84px;                 /* disclaimer(28) + toolbar(28) + utility-strip(28) */
+  top: 60px;                 /* disclaimer(28) + utility-strip(32) */
   z-index: 40;
 }
 
@@ -1662,10 +1661,10 @@ html.tw-high-contrast .tw-admin-ledger thead {
 html.tw-high-contrast .tw-admin-ledger tbody tr:hover {
   background-color: #222; /* just enough to be distinct but text remains readable */
 }
-/* High Contrast Overrides for 4-Layer Header */
+
+/* High Contrast Overrides for 3-Layer Header */
 html.tw-high-contrast .gov-utility-strip,
-html.tw-high-contrast #app-header > div:nth-child(1),
-html.tw-high-contrast .ql-primary-nav-bar,
+html.tw-high-contrast #app-header,
 html.tw-high-contrast #mobile-nav {
   background: #000 !important;
   color: #fff !important;
@@ -1673,28 +1672,27 @@ html.tw-high-contrast #mobile-nav {
 }
 
 html.tw-high-contrast .gov-utility-strip *,
-html.tw-high-contrast #app-header > div:nth-child(1) *,
-html.tw-high-contrast .ql-primary-nav-bar * {
+html.tw-high-contrast #app-header *,
+html.tw-high-contrast #mobile-nav * {
   color: #fff !important;
   border-color: #fff !important;
 }
 
 html.tw-high-contrast .gov-utility-link,
 html.tw-high-contrast .nav-link,
-html.tw-high-contrast .mobile-nav-link,
+html.tw-high-contrast .mobile-nav-link {
+  color: #ff0 !important;
+}
+
 html.tw-high-contrast .a11y-btn {
   color: #ff0 !important;
+  background: #000 !important;
+  border-color: #ff0 !important;
 }
 
 html.tw-high-contrast .a11y-btn:focus-visible,
 html.tw-high-contrast .gov-utility-link:focus-visible,
 html.tw-high-contrast .nav-link:focus-visible {
   outline: 3px solid #ff0 !important;
-}
-
-html.tw-high-contrast .logo-text,
-html.tw-high-contrast #logo-link span,
-html.tw-high-contrast #logo-link div {
-  color: #fff !important;
 }
 

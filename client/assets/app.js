@@ -37,6 +37,7 @@ var ROUTES = {
   "/b/live": pageDirectionBLive,
   "/display": pageDisplay,
   "/help": pageHelp,
+  "/sitemap": pageSitemap,
   "/terms": pageTerms,
   "/privacy": pagePrivacy,
   "/copyright": pageCopyright,
@@ -244,7 +245,7 @@ function pageHome(el) {
 
   el.innerHTML = [
     // Marquee
-    '<div style="margin-left:calc(50% - 50vw); margin-right:calc(50% - 50vw); background-color:#f8fafc; border-bottom:1px solid #cbd5e1; border-top:1px solid #cbd5e1; padding:6px 0; margin-top:-24px; position:relative; overflow:hidden;">',
+    '<div style="margin-left:calc(50% - 50vw); margin-right:calc(50% - 50vw); background-color:#f8fafc; border-bottom:1px solid #cbd5e1; border-top:1px solid #cbd5e1; padding:6px 0; position:relative; overflow:hidden;">',
     '<marquee scrollamount="6" style="color:#0f172a; font-size:0.9rem; font-weight:600;">QueueLess Demo System will commence operations on 30 09 2026 Monday. Citizens having appointments are requested to visit the portal on or after the commencement date.</marquee>',
     '</div>',
 
@@ -300,6 +301,24 @@ function pageHome(el) {
     '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:24px;">',
     servicesHtml,
     '</div>',
+    '</div>'
+  ].join("");
+}
+
+function pageSitemap(el) {
+  el.innerHTML = [
+    '<div class="ql-pagehead" style="padding-bottom:var(--space-3)">',
+    '<h1 class="ql-pagehead__title" style="font-size:2rem; font-weight:700; color:var(--color-text);">Sitemap</h1>',
+    '</div>',
+    '<div class="card" style="max-width:800px; line-height:1.6; padding:var(--space-4);">',
+    '<h2 style="font-size:1.25rem; font-weight:700; margin-bottom:1rem; color:var(--color-text);">QueueLess Virtual Prototype</h2>',
+    '<ul style="list-style:disc; margin-left:1.5rem; color:var(--color-text);">',
+    '<li style="margin-bottom:0.5rem;"><a href="#/" style="color:var(--color-brand); text-decoration:underline;">Home</a></li>',
+    '<li style="margin-bottom:0.5rem;"><a href="#/take-token" style="color:var(--color-brand); text-decoration:underline;">Join Queue</a></li>',
+    '<li style="margin-bottom:0.5rem;"><a href="#/token-status" style="color:var(--color-brand); text-decoration:underline;">Token Status</a></li>',
+    '<li style="margin-bottom:0.5rem;"><a href="#/help" style="color:var(--color-brand); text-decoration:underline;">Help</a></li>',
+    '<li style="margin-bottom:0.5rem;"><a href="#/admin/login" style="color:var(--color-brand); text-decoration:underline;">Staff Login</a></li>',
+    '</ul>',
     '</div>'
   ].join("");
 }
