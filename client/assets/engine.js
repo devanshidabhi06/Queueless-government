@@ -289,6 +289,9 @@
     var svc = STATE.services.find(function(s) { return s.id === opts.serviceId; });
     if (!svc)                                   throw new Error("Please select a service.");
     if (!opts.phone || !opts.phone.trim())       throw new Error("Phone number is required.");
+    var digits = opts.phone.replace(/\D/g, "");
+    if (digits.length === 12 && digits.startsWith("91")) digits = digits.substring(2);
+    if (digits.length !== 10)                    throw new Error("Please enter a valid 10-digit phone number.");
     if ((opts.notifyWhatsApp || opts.notifySms) && !opts.consentGiven) {
       throw new Error("Please tick the consent box to enable reminders.");
     }
