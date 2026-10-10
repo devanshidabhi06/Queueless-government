@@ -327,19 +327,19 @@ We will mention these as “next steps” but not promise implementation:
 
 ## 10) Tracking Checklist (Tick during hackathon)
 ### P0
-- [ ] Document requirements data + UI + print
-- [ ] Fairness anti-spam: active token limits
-- [ ] Outcome/rejection reason + audit
-- [ ] Public display (token numbers only)
-- [ ] Admin console separation + auth gate
-- [ ] Category/Subcategory workflow (Oct 10th)
+- [x] Document requirements data + UI + print
+- [x] Fairness anti-spam: active token limits
+- [x] Outcome/rejection reason + audit
+- [x] Public display (token numbers only)
+- [x] Admin console separation + auth gate
+- [x] Category/Subcategory workflow (Oct 10th)
 
 ### P1
-- [ ] V2 Transplant: Use `queless3.html` as base
-- [ ] V2 Transplant: De-simulate (remove setInterval)
-- [ ] V2 Transplant: Wire UI to `engine.js`
-- [ ] V2 Transplant: Complete Accessibility (High Contrast)
-- [ ] V2 Transplant: Extract JS to `app_v2.js`
+- [x] V2 Transplant: Use `queless3.html` as base
+- [x] V2 Transplant: De-simulate (remove setInterval)
+- [x] V2 Transplant: Wire UI to `engine.js`
+- [x] V2 Transplant: Complete Accessibility (High Contrast)
+- [x] V2 Transplant: Extract JS to `app_v2.js`
 - [ ] WhatsApp JOIN <service_code> (or simulated)
 - [ ] Recycle flow + notify + audit
 - [ ] Confirm/Cancel from reminders

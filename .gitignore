@@ -9,4 +9,25 @@ coverage/
 *.log
 *.sqlite
 *.db
+
+# Reference Folders & Temporary Files
 Design Directives/
+directives/
+docs/
+.agent/
+.gemini/
+.impeccable/
+qa_test.js
+queless3.html
+# Agent Scratch Files
+del.py
+fix.py
+scratch.diff
+scratch/
+test_chatbot.js
+bundle.js
+client_backup/
+client/index_backup.html
+assistant_bot_animation.mp4
+assistant_bot_animation_webm-format.webm
+static_bot_image.png

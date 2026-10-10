@@ -1,0 +1,60 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Office {
+  id        String    @id @default(uuid())
+  name      String
+  createdAt DateTime  @default(now())
+  services  Service[]
+  tokens    Token[]
+}
+
+model Service {
+  id                String   @id @default(uuid())
+  officeId          String
+  name              String
+  avgServiceSeconds Int      @default(20)
+  activeCounters    Int      @default(1)
+  createdAt         DateTime @default(now())
+  office            Office   @relation(fields: [officeId], references: [id])
+  tokens            Token[]
+}
+
+model Token {
+  id               String            @id @default(uuid())
+  officeId         String
+  serviceId        String
+  tokenNumber      String
+  name             String?
+  phone            String
+  status           String            @default("ISSUED") // ISSUED | CALLED | DONE | NO_SHOW | CANCELLED
+  notifyWhatsApp   Boolean           @default(false)
+  notifySms        Boolean           @default(false)
+  consentGiven     Boolean           @default(false)
+  reminder60SentAt DateTime?
+  reminder30SentAt DateTime?
+  createdAt        DateTime          @default(now())
+  calledAt         DateTime?
+  servedAt         DateTime?
+  office           Office            @relation(fields: [officeId], references: [id])
+  service          Service           @relation(fields: [serviceId], references: [id])
+  notifications    NotificationLog[]
+}
+
+model NotificationLog {
+  id                String   @id @default(uuid())
+  tokenId           String
+  channel           String   // WHATSAPP | SMS
+  thresholdSeconds  Int
+  status            String   // SENT | FAILED | SKIPPED
+  providerMessageId String?
+  error             String?
+  createdAt         DateTime @default(now())
+  token             Token    @relation(fields: [tokenId], references: [id])
+}
