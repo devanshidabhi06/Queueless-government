@@ -1,216 +1,410 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full" data-theme="light">
+<html lang="en" data-theme="light" style="color-scheme:light"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<script>
+  try {
+    if (!localStorage.getItem('ql_session')) window.location.href = 'login.html';
+  } catch(e) { window.location.href = 'login.html'; }
+</script>
+<title>QueueLess – Smart Government Office Queues</title>
+<link rel="stylesheet" href="assets/leaflet.css" />
+<script src="assets/leaflet.js"></script>
+<style>
+#home-map, #map, #tab-map { height: 500px; width: 100%; position: relative; display: block; }
+:root{--bg:#f7f3ea;--card:#fff;--tx:#1c1c1c;--mut:#5a5546;--bd:#d9d2c0;--pri:#0a2a66;--pri2:#0a2a66;--ok:#16a34a;--warn:#f59e0b;--bad:#dc2626;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;line-height:1.45}
+header{background:linear-gradient(120deg,var(--pri),var(--pri2));color:#fff;padding:14px 18px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+header h1{margin:0;font-size:1.3rem}header small{opacity:.85;display:block;font-size:.75rem}
+.clock{background:rgba(255,255,255,.18);border-radius:10px;padding:6px 12px;font-variant-numeric:tabular-nums;font-weight:600}
+nav{display:flex;gap:6px;padding:10px 14px;overflow-x:auto}
+nav button{border:1px solid var(--bd);background:var(--card);color:var(--tx);padding:8px 16px;border-radius:99px;cursor:pointer;font-weight:600;white-space:nowrap}
+nav button.on{background:var(--pri);color:#fff;border-color:var(--pri)}
+main{max-width:1150px;margin:auto;padding:0 14px 40px}
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(320px,1fr))}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:16px}
+h2{margin:0 0 10px;font-size:1.05rem}label{display:block;font-size:.8rem;color:var(--mut);margin:10px 0 3px}
+input,select{width:100%;padding:10px;border-radius:10px;border:1px solid var(--bd);background:var(--bg);color:var(--tx);font-size:.95rem}
+.btn{border:0;background:linear-gradient(120deg,var(--pri),var(--pri2));color:#fff;padding:11px 16px;border-radius:10px;font-weight:700;cursor:pointer;width:100%;margin-top:12px}
+.btn.s{width:auto;margin:0;padding:6px 11px;font-size:.8rem}.btn.g{background:var(--bg);color:var(--tx);border:1px solid var(--bd)}.btn.r{background:var(--bad)}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:14px}
+.kpi{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:12px}.kpi b{font-size:1.6rem;display:block}.kpi span{font-size:.75rem;color:var(--mut)}
+.bar{height:10px;background:var(--bd);border-radius:9px;overflow:hidden}.bar i{display:block;height:100%;transition:width .5s}
+.ticket{border:2px dashed var(--pri);border-radius:16px;padding:14px;margin-bottom:12px;display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.ticket .no{font-size:2.2rem;font-weight:800;color:var(--pri);letter-spacing:1px}
+.pill{display:inline-block;padding:3px 10px;border-radius:99px;font-size:.75rem;font-weight:700;color:#fff}
+.banner{padding:10px 12px;border-radius:10px;font-weight:600;margin-top:8px;font-size:.9rem}
+.b-ok{background:#16a34a22;color:var(--ok)}.b-warn{background:#f59e0b22;color:var(--warn)}.b-bad{background:#dc262622;color:var(--bad)}.b-pri{background:#4f46e522;color:var(--pri)}
+.ctr{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.c{border:1px solid var(--bd);border-radius:12px;padding:10px;font-size:.85rem}.c b{font-size:1.2rem}
+table{width:100%;border-collapse:collapse;font-size:.85rem}td,th{padding:6px 4px;border-bottom:1px solid var(--bd);text-align:left}
+.fc{display:flex;gap:6px;align-items:flex-end;height:90px}.fc div{flex:1;border-radius:6px 6px 0 0;position:relative}.fc span{position:absolute;bottom:-18px;left:0;right:0;text-align:center;font-size:.65rem;color:var(--mut)}
+#toasts{position:fixed;right:12px;top:calc(12px + env(safe-area-inset-top,0px));display:flex;flex-direction:column;gap:8px;z-index:9;max-width:300px}
+.toast{background:var(--card);border-left:5px solid var(--pri);box-shadow:0 6px 20px #0003;padding:10px 12px;border-radius:10px;font-size:.85rem;animation:in .3s}
+@keyframes in{from{transform:translateX(40px);opacity:0}}
+.log{max-height:150px;overflow:auto;font-size:.8rem;color:var(--mut)}.mut{color:var(--mut);font-size:.8rem}.hide{display:none}
+.msgs{height:230px;overflow:auto;display:flex;flex-direction:column;gap:8px;margin-bottom:8px;padding:4px}.m{max-width:85%;padding:8px 12px;border-radius:14px;white-space:pre-wrap;font-size:.9rem}.m.u{align-self:flex-end;background:var(--pri);color:#fff}.m.b{align-self:flex-start;background:var(--bg);border:1px solid var(--bd)}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}.rk{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:8px 0;border-bottom:1px solid var(--bd);font-size:.85rem}.rk a{color:var(--pri);font-weight:600}
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>QueueLess — Virtual Token System</title>
-  <meta name="description"
-    content="QueueLess reduces physical waiting at government offices by issuing virtual tokens with real-time ETA and WhatsApp/SMS reminders." />
+body{font-family:"Noto Sans","Segoe UI",Arial,sans-serif}
+.in{max-width:1150px;margin:auto;padding:0 14px}.tri{height:6px;background:linear-gradient(90deg,#ff9933 33%,#fff 33% 66%,#138808 66%)}
+.util{background:#e9ecf1;border-bottom:1px solid var(--bd);font-size:.78rem}.util .in{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;padding-top:4px;padding-bottom:4px}
+.ur{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.ur a{color:var(--pri);text-decoration:underline}.ur select{width:auto;padding:3px 6px;font-size:.78rem}
+.fsz button{border:1px solid var(--bd);background:#fff;color:var(--tx);padding:1px 7px;cursor:pointer;font-weight:700}
 
-  <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
+/* AI Widget High Contrast Rules */
+html.tw-high-contrast #ai-widget, html.tw-high-contrast #ai-widget > div { background: #000 !important; color: #fff !important; border-color: #fff !important; }
+html.tw-high-contrast #ai-fab video { border: 2px solid #fff !important; }
+html.tw-high-contrast #ai-fab > div { background: #000 !important; border: 1px solid #fff !important; color: #fff !important; }
+html.tw-high-contrast #ai-fab:focus, html.tw-high-contrast #ai-widget button:focus, html.tw-high-contrast #ci:focus { outline: 3px solid #ff0 !important; }
+html.tw-high-contrast #ai-widget h2, html.tw-high-contrast #ai-widget div { color: #fff !important; }
+html.tw-high-contrast .m.b { background: #000 !important; border: 1px solid #fff !important; }
+html.tw-high-contrast .m.u { background: #fff !important; color: #000 !important; }
 
-  <!-- Google Fonts: Noto Sans — GIGW/UX4G portal reference font (Latin + Devanagari support) -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap"
-    rel="stylesheet" />
+.clock{background:#fff!important;color:var(--pri)!important;border:1px solid var(--bd);border-radius:2px!important;padding:2px 8px!important;font-weight:700}
+header{background:#fff!important;color:var(--tx)!important;padding:0!important;display:block!important;border-bottom:1px solid var(--bd)}
+.brand{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;padding-top:12px;padding-bottom:12px}.bl{display:flex;gap:14px;align-items:center}
+.t1{font-family:Georgia,"Times New Roman",serif;font-size:1.9rem;font-weight:700;color:var(--pri);line-height:1.1}.t2{font-weight:600;font-size:.95rem}.t3{color:var(--mut);font-size:.8rem}
+.hl{text-align:right;font-size:.8rem;border-left:3px solid #ff9933;padding-left:12px;color:var(--mut)}.hl b{color:var(--pri);font-size:.95rem}
+nav{display:flex;align-items:center;gap:4px!important;background:transparent!important;padding:0!important}
+nav button{background:transparent!important;color:var(--pri)!important;border:0!important;border-radius:6px!important;padding:10px 15px!important;font-weight:600;font-size:0.95rem;border-bottom:none!important}
+nav button:hover{background:#f1f5f9!important}nav button.on{background:#e2e8f0!important;color:var(--pri)!important;border:none!important}
+main{padding-top:16px}.card{border-top:3px solid var(--pri)}
+.btn{background:var(--pri)!important}.btn:hover{background:#061c47!important}.btn.g{background:#fff!important;color:var(--tx)}.btn.r{background:var(--bad)!important}
+h2{font-family:Georgia,"Times New Roman",serif;color:var(--pri);border-bottom:1px solid var(--bd);padding-bottom:6px}
+.bar,.bar i,.fc div{border-radius:0!important}.ticket{border:2px dashed var(--pri);background:#fafbfd}.m.u{background:var(--pri)}
+footer{background:#14284b;color:#dfe5f0;margin-top:30px;font-size:.85rem}.fin{max-width:1150px;margin:auto;padding:22px 14px 14px}
+.fg{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:20px}footer h4{margin:0 0 8px;color:#fff;border-bottom:2px solid #ff9933;display:inline-block;padding-bottom:3px}
+footer a,footer span{display:block;color:#dfe5f0;margin:4px 0;cursor:pointer;text-decoration:none}footer a:hover{text-decoration:underline}footer p{margin:0;line-height:1.6}
+.fb{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;border-top:1px solid #34497a;margin-top:18px;padding-top:12px;font-size:.78rem}.fb span{margin:0}
+.disc{background:#0d1c38;border-left:4px solid #ff9933;margin-top:12px;padding:8px 12px;font-size:.78rem}
+.skip{position:absolute;left:-999px}
 
-  <!-- UX4G Design System CSS -->
-  <link rel="stylesheet" href="https://cdn.ux4g.gov.in/UX4G@3.3.0/index.css" />
-
-  <!-- App CSS -->
-  <link rel="stylesheet" href="assets/styles.css?v=3" />
-
-  <!-- Tailwind config -->
-  <script>
-    tailwind.config = {
-      corePlugins: {
-        preflight: false,
-      },
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ["Noto Sans", "ui-sans-serif", "system-ui", "sans-serif"],
-          },
-          colors: {
-            brand: {
-              50: "#f0f9ff",
-              100: "#e0f2fe",
-              200: "#bae6fd",
-              400: "#38bdf8",
-              500: "#0ea5e9",
-              600: "#0284c7",
-              700: "#0369a1",
-              800: "#075985",
-              900: "#0c4a6e",
-            },
-            surface: {
-              DEFAULT: "#0f172a",
-              card: "#1e293b",
-              border: "#334155",
-              muted: "#475569",
-            },
-          },
-        },
-      },
-    };
-  </script>
-</head>
-
-<body class="h-full font-sans flex flex-col">
-
-  <!-- ===== SKIP TO MAIN CONTENT (keyboard / screen-reader accessibility) ===== -->
-  <a href="#app-root" id="skip-to-main" class="skip-link">Skip to main content</a>
-
-  <!-- ===== DISCLAIMER BAR (non-negotiable — must remain) ===== -->
-  <div id="disclaimer-bar" class="disclaimer-bar">
-    <span class="font-semibold">&#9888; </span>
-    Demo mode: reminder triggers use 60 s / 30 s for judging; production would use 10 min / 5 min.
-    ETA uses explainable queue math &#8212; not AI.
-    Last updated: <strong>Sep 30, 2026</strong>.
-  </div>
-
-  <!-- ===== LAYER 1: LIGHT UTILITY STRIP ===== -->
-  <div id="gov-utility-strip" class="gov-utility-strip" role="navigation" aria-label="Utility links" style="background-color:#fefce8; color:#1e293b; border-bottom:1px solid #e2e8f0;">
-    <div class="gov-utility-strip__inner" style="display:flex; justify-content:space-between; align-items:center; padding: 4px 16px; max-width:1400px; margin:0 auto; flex-wrap:wrap; gap:8px; font-size:0.85rem; font-weight:600;">
-      
-      <div class="gov-utility-strip__links" aria-label="Quick utility links" style="display:flex; align-items:center; gap:12px;">
-        <a href="#app-root" class="gov-utility-link" style="color:#1e293b; text-decoration:none;">Skip to Main Content</a>
-        <span class="gov-utility-sep" aria-hidden="true" style="color:#cbd5e1;">|</span>
-        <a href="#/help" class="gov-utility-link" style="color:#1e293b; text-decoration:none;">Screen Reader Access</a>
-      </div>
-      
-      <div style="display:flex; align-items:center; gap:12px;">
-        <!-- ===== ACCESSIBILITY TOOLBAR ===== -->
-        <div id="a11y-toolbar" class="a11y-toolbar" role="region" aria-label="Accessibility options" style="background:transparent; border:none; padding:0; box-shadow:none;">
-          <div class="a11y-toolbar__inner" style="display:flex; align-items:center; gap:8px;">
-            <span class="a11y-toolbar__label" aria-hidden="true" style="color:#475569;">Accessibility:</span>
-            <button id="a11y-text-size" class="a11y-btn" type="button" aria-pressed="false" title="Toggle larger text size" style="color:#1e293b; border:1px solid #cbd5e1; background:#ffffff; padding:2px 6px; border-radius:2px;">&#65;&#8593; Text Size</button>
-            <button id="a11y-contrast" class="a11y-btn" type="button" aria-pressed="false" title="Toggle high-contrast mode" style="color:#1e293b; border:1px solid #cbd5e1; background:#ffffff; padding:2px 6px; border-radius:2px;">&#9680; High Contrast</button>
-            <button id="a11y-motion" class="a11y-btn" type="button" aria-pressed="false" title="Disable animations" style="color:#1e293b; border:1px solid #cbd5e1; background:#ffffff; padding:2px 6px; border-radius:2px;">&#9208;&#65039; Reduce Motion</button>
-          </div>
-        </div>
-        <span class="gov-utility-sep" aria-hidden="true" style="color:#cbd5e1;">|</span>
-        <a href="#/sitemap" class="gov-utility-link" style="color:#1e293b; text-decoration:none;">Sitemap</a>
-      </div>
+:root{--ok:#138808;--warn:#d97706}
+.util{background:#ff9933!important;border-color:#e08000!important;color:#1a1a1a}.util .ur a{color:#0a2a66;font-weight:600}
+.fsz button{border-color:#0a2a66!important;color:#0a2a66!important}.clock{border-color:#0a2a66!important}
+nav button.on{border-bottom-color:#138808!important}.card{border-top:3px solid #ff9933}
+h2{color:#0a2a66;border-bottom:2px solid #e8e0cc}.kpi b{color:#0a2a66}.t1{color:#0a2a66}
+.btn{background:#0a2a66!important}.btn:hover{background:#ff9933!important;color:#0a2a66!important}.btn.g{background:#fff!important;color:#0a2a66!important;border:1px solid #0a2a66}.btn.r{background:#b91c1c!important}.btn.r:hover{background:#7f1d1d!important;color:#fff!important}
+.tick{background:#fff3e0;border-bottom:1px solid #f0c27a;display:flex;font-size:.82rem}.tick b{background:#b85c00;color:#fff;padding:6px 14px;white-space:nowrap}.tick div{overflow:hidden;flex:1;white-space:nowrap}.tick span{display:inline-block;padding:6px 0 6px 100%;animation:mq 45s linear infinite}.tick:hover span{animation-play-state:paused}@keyframes mq{to{transform:translateX(-100%)}}
+footer{background:#0d4b1d!important;border-top:4px solid #ff9933}footer .tri{display:none}.fb{border-top-color:#2f7a42!important}.disc{background:#093316!important}
+.hero { background: linear-gradient(135deg, #FF9933 0%, #ffffff 50%, #138808 100%); padding: 80px 0 120px; text-align: left;}
+.hero h1, .hero h3 { color: #0a2a66 !important; text-shadow: 0 1px 3px rgba(255,255,255,0.8); }
+.ql-btn { background: #fff8e1 !important; border-color: #fde047 !important; padding: 15px 25px !important; font-size: 1.05rem !important; border-radius: 12px !important; font-weight: 700 !important; color: #0a2a66 !important; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1) !important; cursor: pointer; }
+.ql-btn:hover { background: #fef08a !important; }
+html.tw-high-contrast body { --bg: #000 !important; --card: #111 !important; --tx: #fff !important; --mut: #ddd !important; --bd: #555 !important; --pri: #ffff00 !important; --pri2: #ffff00 !important; }
+html.tw-high-contrast header, html.tw-high-contrast .hero { background: #000 !important; border-bottom: 2px solid #ffff00 !important; }
+html.tw-high-contrast .card { background: #111 !important; border-color: #ffff00 !important; }
+html.tw-high-contrast .t1, html.tw-high-contrast h1, html.tw-high-contrast h2, html.tw-high-contrast h3, html.tw-high-contrast h4, html.tw-high-contrast .kpi b { color: #ffff00 !important; }
+html.tw-high-contrast .btn, html.tw-high-contrast .ql-btn { background: #ffff00 !important; color: #000 !important; border: 2px solid #fff !important; font-weight: 900 !important; }
+html.tw-high-contrast select, html.tw-high-contrast input, html.tw-high-contrast button:not(.btn) { background: #000 !important; color: #ffff00 !important; border: 1px solid #ffff00 !important; }
+html.tw-high-contrast .util { background: #000 !important; color: #fff !important; border-bottom: 2px solid #ffff00 !important; }
+html.tw-reduce-motion * { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+@keyframes pulse { 0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(37,99,235,0.7); } 70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(37,99,235,0); } 100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(37,99,235,0); } }
+.custom-user-pin, .custom-office-pin { background: none; border: none; }
+</style>
+</head><body>
+<div class="tri"></div>
+<div class="disc" style="margin-top:0;border-radius:0;background:#0d1c38;color:#fff;text-align:center">⚠ This is a hackathon prototype built for demonstration. It is not an official Government of India website. All queue data is simulated.</div>
+<div class="util"><div class="in"><span>🇮🇳 Government of India &nbsp;|&nbsp; Citizen Services Portal (Prototype)</span><span class="ur"><a href="#main">Skip to main content</a><span class="fsz" style="display:flex;align-items:center;gap:4px"><span style="font-size:0.75rem;font-weight:700;color:var(--pri);margin-right:4px">ACCESSIBILITY:</span><button onclick="fs(-1)" aria-label="Decrease text size">A-</button><button onclick="fs(0)" aria-label="Normal text size">A</button><button onclick="fs(1)" aria-label="Increase text size">A+</button><button onclick="toggleHc()" aria-label="High Contrast" style="margin-left:4px">◑ High Contrast</button><button onclick="toggleRm()" aria-label="Reduce Motion">⊘ Reduce Motion</button></span><button id="btn-tts" onclick="speakCurrentPage()" aria-label="Listen to page content" style="margin-left:4px">🔊 Listen</button><select id="lg" onchange="setLang(this.value)" aria-label="Language"></select><select id="spd" aria-label="Demo speed" onchange="S.speed=+this.value;restart()"><option value="1">Demo 1×</option><option value="3">3×</option><option value="8">8×</option></select><span class="clock" id="clk"></span><button onclick="localStorage.removeItem('ql_session'); window.location.href='login.html'" style="border:none;background:#b91c1c;color:#fff;padding:3px 12px;border-radius:4px;font-weight:700;font-size:0.75rem;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,0.2);margin-left:4px;text-transform:uppercase;letter-spacing:0.5px;">Logout</button></span></div></div>
+<header><div class="brand" style="max-width:1400px;margin:auto;padding:12px 30px"><div class="bl"><svg width="52" height="52" viewBox="0 0 52 52" fill="none" stroke="currentColor" stroke-width="1.2"><circle cx="26" cy="26" r="22" stroke-width="2.5"/><circle cx="26" cy="26" r="3" fill="currentColor"/><line x1="26" y1="26" x2="45.0" y2="26.0"/><line x1="26" y1="26" x2="44.4" y2="30.9"/><line x1="26" y1="26" x2="42.5" y2="35.5"/><line x1="26" y1="26" x2="39.4" y2="39.4"/><line x1="26" y1="26" x2="35.5" y2="42.5"/><line x1="26" y1="26" x2="30.9" y2="44.4"/><line x1="26" y1="26" x2="26.0" y2="45.0"/><line x1="26" y1="26" x2="21.1" y2="44.4"/><line x1="26" y1="26" x2="16.5" y2="42.5"/><line x1="26" y1="26" x2="12.6" y2="39.4"/><line x1="26" y1="26" x2="9.5" y2="35.5"/><line x1="26" y1="26" x2="7.6" y2="30.9"/><line x1="26" y1="26" x2="7.0" y2="26.0"/><line x1="26" y1="26" x2="7.6" y2="21.1"/><line x1="26" y1="26" x2="9.5" y2="16.5"/><line x1="26" y1="26" x2="12.6" y2="12.6"/><line x1="26" y1="26" x2="16.5" y2="9.5"/><line x1="26" y1="26" x2="21.1" y2="7.6"/><line x1="26" y1="26" x2="26.0" y2="7.0"/><line x1="26" y1="26" x2="30.9" y2="7.6"/><line x1="26" y1="26" x2="35.5" y2="9.5"/><line x1="26" y1="26" x2="39.4" y2="12.6"/><line x1="26" y1="26" x2="42.5" y2="16.5"/><line x1="26" y1="26" x2="44.4" y2="21.1"/></svg><div><div class="t1" style="font-size:2.2rem">QueueLess</div></div></div><nav id="nav"></nav></div></header>
+<div class="tick"><b>Latest</b><div><span>📢 Virtual tokens now available for Collectorate, RTO, Passport Seva Kendra and Civic Centre &nbsp;•&nbsp; Senior citizens and Persons with Disabilities get priority &nbsp;•&nbsp; Choose your language from the top bar &nbsp;•&nbsp; Ask the AI Assistant for document checklists</span></div></div>
+<section id="v-home">
+  <div class="hero">
+    <div class="in" style="max-width:1400px;padding:0 30px">
+      <h3 style="font-size:1rem;letter-spacing:1px;text-transform:uppercase;font-weight:700">Welcome to QueueLess</h3>
+      <h1 style="font-size:3.2rem;line-height:1.2;margin:15px 0 30px;max-width:700px">Delivering Token services to citizens in a timely, accessible and reliable manner</h1>
     </div>
   </div>
-
-  <!-- ===== LAYER 2: UNIFIED IDENTITY & PRIMARY NAV ===== -->
-  <header id="app-header" class="app-header" style="background-color:#ffffff; color:#1e293b; border-bottom:1px solid #e2e8f0; padding:16px 24px;">
-    <div style="max-width:1400px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
-      
-      <!-- Left: QueueLess wordmark -->
-      <a href="#/" id="logo-link" class="logo" aria-label="QueueLess home" style="text-decoration:none;">
-        <span class="logo-text" style="color:#1e293b; font-weight:800; font-size:2.2rem; line-height:1; letter-spacing:-0.5px;">QueueLess</span>
-      </a>
-
-      <!-- Right: Primary Nav (including Staff Login) -->
-      <nav id="main-nav" class="main-nav" aria-label="Primary navigation" style="display:flex; gap:20px; align-items:center;">
-        <a href="#/" id="nav-home" class="nav-link" data-route="/" style="color:#0f172a; font-weight:600; text-decoration:none; font-size:1rem;">Home</a>
-        <a href="#/take-token" id="nav-take-token" class="nav-link" data-route="/take-token" style="color:#0f172a; font-weight:600; text-decoration:none; font-size:1rem;">Join Queue</a>
-        <a href="#/token-status" id="nav-status" class="nav-link" data-route="/token-status" style="color:#0f172a; font-weight:600; text-decoration:none; font-size:1rem;">Status</a>
-        <a href="#/help" id="nav-help" class="nav-link" data-route="/help" style="color:#0f172a; font-weight:600; text-decoration:none; font-size:1rem;">Help</a>
-        <span style="color:#cbd5e1;" aria-hidden="true">|</span>
-        <a href="#/admin/login" id="nav-staff-link" class="nav-link" style="color:#0284c7; font-weight:600; text-decoration:none; font-size:1rem;">Staff login</a>
-      </nav>
-
-      <!-- Mobile hamburger -->
-      <button id="mobile-menu-btn" class="mobile-menu-btn" aria-label="Toggle navigation menu" aria-expanded="false">
-        <span class="hamburger-line" style="background-color:#1e293b;"></span>
-        <span class="hamburger-line" style="background-color:#1e293b;"></span>
-        <span class="hamburger-line" style="background-color:#1e293b;"></span>
-      </button>
-    </div>
-
-    <!-- Mobile nav drawer -->
-    <nav id="mobile-nav" class="mobile-nav hidden" aria-label="Mobile navigation" style="background-color:#ffffff; margin-top:16px; border-top:1px solid #e2e8f0; padding-top:16px; display:flex; flex-direction:column; gap:12px;">
-      <a href="#/" id="mobile-nav-home" class="mobile-nav-link" data-route="/" style="color:#0f172a; font-weight:600;">Home</a>
-      <a href="#/take-token" id="mobile-nav-take-token" class="mobile-nav-link" data-route="/take-token" style="color:#0f172a; font-weight:600;">Join Queue</a>
-      <a href="#/token-status" id="mobile-nav-status" class="mobile-nav-link" data-route="/token-status" style="color:#0f172a; font-weight:600;">Status</a>
-      <a href="#/help" id="mobile-nav-help" class="mobile-nav-link" data-route="/help" style="color:#0f172a; font-weight:600;">Help</a>
-      <a href="#/admin/login" id="mobile-nav-staff" class="mobile-nav-link" style="color:#0284c7; font-weight:600;">Staff login</a>
-    </nav>
-  </header>
-
-  <!-- ===== MAIN ROUTER OUTLET ===== -->
-  <main id="app-root" class="app-root" tabindex="-1"></main>
-
-  <!-- ===== FOOTER (Passport Seva / Parivahan-style portal grade) ===== -->
-  <footer id="app-footer" class="app-footer" style="background: linear-gradient(135deg, #0b1727 0%, #171738 100%); color: #cbd5e1; border-top: 1px solid rgba(255, 255, 255, 0.1);">
-    <!-- Tier A: Policy link row -->
-    <div style="background-color:rgba(0, 0, 0, 0.25); padding:12px 16px; text-align:center; display:flex; flex-wrap:wrap; justify-content:center; gap:8px 16px; align-items:center;">
-      <a href="#/terms" class="footer-link" style="color:#ffffff; font-weight:600; font-size:0.875rem; text-decoration:none;">Terms & Conditions</a>
-      <span style="color:rgba(255,255,255,0.2);" aria-hidden="true">|</span>
-      <a href="#/privacy" class="footer-link" style="color:#ffffff; font-weight:600; font-size:0.875rem; text-decoration:none;">Privacy Policy</a>
-      <span style="color:rgba(255,255,255,0.2);" aria-hidden="true">|</span>
-      <a href="#/copyright" class="footer-link" style="color:#ffffff; font-weight:600; font-size:0.875rem; text-decoration:none;">Copyright</a>
-      <span style="color:rgba(255,255,255,0.2);" aria-hidden="true">|</span>
-      <a href="#/hyperlinking" class="footer-link" style="color:#ffffff; font-weight:600; font-size:0.875rem; text-decoration:none;">Hyperlinking Policy</a>
-      <span style="color:rgba(255,255,255,0.2);" aria-hidden="true">|</span>
-      <a href="#/help" class="footer-link" style="color:#ffffff; font-weight:600; font-size:0.875rem; text-decoration:none;">Contact / Help</a>
-    </div>
-
-    <!-- Tier B: Multi-column footer -->
-    <div class="footer-inner" style="padding: var(--space-4) var(--space-3) var(--space-3); max-width: 1200px; margin: 0 auto;">
-      <div class="footer-section-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:var(--space-4); padding-bottom:var(--space-3); border-bottom:1px solid rgba(255, 255, 255, 0.1);">
-        
-        <div class="footer-col" style="display:flex; flex-direction:column; gap:var(--space-2);">
-          <div class="footer-col__heading" style="color:#ffffff; font-weight:700; font-size:1rem; margin-bottom:4px;">Help & Support</div>
-          <a href="#/help" class="footer-link" style="color:#cbd5e1; font-size:0.875rem; text-decoration:none;">Help & policies</a>
-          <a href="#/help#a11y" class="footer-link" style="color:#cbd5e1; font-size:0.875rem; text-decoration:none;">Accessibility options</a>
-          <a href="#/help" class="footer-link" style="color:#cbd5e1; font-size:0.875rem; text-decoration:none;">Report an issue</a>
-        </div>
-        
-        <div class="footer-col" style="display:flex; flex-direction:column; gap:var(--space-2);">
-          <div class="footer-col__heading" style="color:#ffffff; font-weight:700; font-size:1rem; margin-bottom:4px;">Services</div>
-          <a href="#/take-token" class="footer-link" style="color:#cbd5e1; font-size:0.875rem; text-decoration:none;">Take a token</a>
-          <a href="#/token-status" class="footer-link" style="color:#cbd5e1; font-size:0.875rem; text-decoration:none;">Check token status</a>
-          <a href="#/display" target="_blank" rel="noopener" class="footer-link" style="color:#cbd5e1; font-size:0.875rem; text-decoration:none;">Display board (opens in new tab)</a>
-        </div>
-
-        <div class="footer-col" style="display:flex; flex-direction:column; gap:var(--space-2);">
-          <div class="footer-col__heading" style="color:#ffffff; font-weight:700; font-size:1rem; margin-bottom:4px;">Website Policies</div>
-          <a href="#/terms" class="footer-link" style="color:#cbd5e1; font-size:0.875rem; text-decoration:none;">Terms & Conditions</a>
-          <a href="#/privacy" class="footer-link" style="color:#cbd5e1; font-size:0.875rem; text-decoration:none;">Privacy Policy</a>
-          <a href="#/copyright" class="footer-link" style="color:#cbd5e1; font-size:0.875rem; text-decoration:none;">Copyright</a>
-          <a href="#/hyperlinking" class="footer-link" style="color:#cbd5e1; font-size:0.875rem; text-decoration:none;">Hyperlinking Policy</a>
-        </div>
-
-        <div class="footer-col" style="display:flex; flex-direction:column; gap:var(--space-2);">
-          <div class="footer-col__heading" style="color:#ffffff; font-weight:700; font-size:1rem; margin-bottom:4px;">Staff</div>
-          <a href="#/admin/login" class="footer-link" style="color:#cbd5e1; font-size:0.875rem; text-decoration:none;">Staff login</a>
-          <a href="#/admin/queue" class="footer-link" style="color:#cbd5e1; font-size:0.875rem; text-decoration:none;">Admin queue</a>
-          <a href="#/admin/notifications" class="footer-link" style="color:#cbd5e1; font-size:0.875rem; text-decoration:none;">Notifications</a>
-        </div>
-      </div>
-
-      <!-- Tier C: Metadata bar -->
-      <div style="margin-top:var(--space-3); text-align:center; font-size:0.8rem; color:#94a3b8; line-height:1.6;">
-        <div>Content owned by QueueLess Team (Hackathon prototype) <span style="margin:0 8px;color:rgba(255,255,255,0.2);">|</span> Site maintained by QueueLess Team</div>
-        <div>Last reviewed: <strong>Oct 06, 2026</strong></div>
-        <div style="margin-top:4px; font-style:italic; opacity:0.8;">Privacy note: display sync uses token/counter data only (no phone numbers).</div>
+  <div class="in" style="margin-top:-60px;position:relative;z-index:2;margin-bottom:30px;max-width:1400px;padding:0 30px">
+    <div class="card" style="padding:40px;text-align:center;box-shadow:0 10px 25px rgba(0,0,0,0.1);border-radius:12px;border-top:none">
+      <h2 style="border-bottom:none;font-size:1.6rem;margin-bottom:10px">Quick Links</h2>
+      <div style="display:flex;gap:20px;justify-content:center;flex-wrap:wrap;margin-top:20px">
+        <button class="btn s g ql-btn" onclick="show('join')">📝 Apply for Virtual Token</button>
+        <button class="btn s g ql-btn" onclick="show('map')">🗺️ Live Office Map</button>
+        <button class="btn s g ql-btn" onclick="show('status')">🕒 Check Token Availability</button>
+        <button class="btn s g ql-btn" onclick="window.open('display.html', '_blank')">📺 Live Display Board</button>
+        <button class="btn s g ql-btn" onclick="show('how')">🛡️ Know About Our Services</button>
       </div>
     </div>
     
-    <!-- Tier D: Disclaimer Band -->
-    <div style="background-color:#000000; color:#f8fafc; padding: 12px 16px; text-align:center; font-size:0.85rem; font-weight:500;">
-      Hackathon Prototype &mdash; Not an official Government website.
+    <!-- Real-Time Leaflet Map Card on Home Page -->
+    <div class="card" style="margin-top:24px;padding:24px;box-shadow:0 10px 25px rgba(0,0,0,0.08);border-radius:12px">
+      <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:12px">
+        <div>
+          <h2 style="margin:0;border-bottom:none;display:flex;align-items:center;gap:8px">
+            <span>🇮🇳 Real-Time Government Office Map of India</span>
+            <span class="pill" style="background:var(--ok);font-size:0.7rem;animation:pulse 2s infinite">● Live GPS & Queue Streaming</span>
+          </h2>
+          <p class="mut" style="margin:4px 0 0;font-size:0.85rem">Explore live waiting times across major Indian administrative hubs, find your nearest office & get virtual tokens.</p>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn s" onclick="locate()" style="width:auto;display:inline-flex;align-items:center;gap:4px">📍 Track My Location</button>
+          <button class="btn s g" onclick="resetToIndia()" style="width:auto">🔄 Pan-India View</button>
+        </div>
+      </div>
+
+      <!-- Real-Time Pan-India Metrics Bar -->
+      <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(160px, 1fr));gap:10px;margin-bottom:14px;background:var(--bg);padding:10px 14px;border-radius:10px;border:1px solid var(--bd);">
+        <div style="font-size:0.8rem">
+          <span class="mut" style="display:block;font-size:0.72rem">🏛️ Active Hubs in India</span>
+          <b id="india-total-offices" style="font-size:1.2rem;color:var(--pri)">28</b>
+        </div>
+        <div style="font-size:0.8rem">
+          <span class="mut" style="display:block;font-size:0.72rem">👥 Live Waiting Citizens</span>
+          <b id="india-live-citizens" style="font-size:1.2rem;color:var(--pri)">--</b>
+        </div>
+        <div style="font-size:0.8rem">
+          <span class="mut" style="display:block;font-size:0.72rem">⏱️ National Avg Wait</span>
+          <b id="india-avg-wait" style="font-size:1.2rem;color:var(--ok)">--</b>
+        </div>
+        <div style="font-size:0.8rem">
+          <span class="mut" style="display:block;font-size:0.72rem">🛰️ GPS Tracker Status</span>
+          <b style="font-size:0.95rem;color:var(--ok)">Active (Live)</b>
+        </div>
+      </div>
+
+      <!-- Zone Quick Filters -->
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;align-items:center;">
+        <span style="font-size:0.78rem;font-weight:700;color:var(--mut);">Regional Zones:</span>
+        <button class="btn s g" onclick="flyToZone('all')" style="padding:4px 10px;font-size:0.78rem;">🇮🇳 All India</button>
+        <button class="btn s g" onclick="flyToZone('north')" style="padding:4px 10px;font-size:0.78rem;">🏛️ North (Delhi/UP/PB/RJ)</button>
+        <button class="btn s g" onclick="flyToZone('west')" style="padding:4px 10px;font-size:0.78rem;">🌊 West (MH/GJ)</button>
+        <button class="btn s g" onclick="flyToZone('south')" style="padding:4px 10px;font-size:0.78rem;">🌴 South (KA/TN/TS)</button>
+        <button class="btn s g" onclick="flyToZone('east')" style="padding:4px 10px;font-size:0.78rem;">🌅 East (WB/BR/AS)</button>
+        <button class="btn s g" onclick="flyToZone('central')" style="padding:4px 10px;font-size:0.78rem;">🏔️ Central (MP)</button>
+      </div>
+      
+      <div style="position:relative;">
+        <!-- PIN Code Search Overlay Bar -->
+        <div style="position:absolute;top:16px;left:50%;transform:translateX(-50%);z-index:1000;background:rgba(255,255,255,0.95);backdrop-filter:blur(8px);padding:8px 16px;border-radius:12px;box-shadow:0 8px 25px rgba(0,0,0,0.18);border:1px solid var(--bd);display:flex;align-items:center;gap:10px;width:min(460px, calc(100% - 32px));">
+          <input type="text" class="pincode-input" placeholder="Search City or 6-digit PIN (e.g. Delhi, 110001, Mumbai)" style="border:none;background:transparent;outline:none;font-size:0.95rem;flex:1;color:var(--tx);font-weight:500;" onkeydown="if(event.key==='Enter') searchByPincode(this.value)">
+          <button onclick="searchByPincode(this.previousElementSibling.value)" style="background:var(--pri);color:#fff;border:none;border-radius:8px;padding:8px 16px;cursor:pointer;font-weight:700;font-size:1rem;display:flex;align-items:center;justify-content:center;" aria-label="Search PIN Code">
+            ➔
+          </button>
+        </div>
+        <div id="home-map" style="height:500px;width:100%;border-radius:12px;border:1px solid var(--bd);z-index:1;"></div>
+      </div>
+
+      <!-- Quick Indian City PIN Code Chips -->
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:12px;align-items:center;">
+        <span style="font-size:0.78rem;font-weight:700;color:var(--mut);">Major Indian Hubs:</span>
+        <button class="btn s g" onclick="searchByPincode('110001')" style="padding:3px 8px;font-size:0.75rem;">Delhi 110001</button>
+        <button class="btn s g" onclick="searchByPincode('400001')" style="padding:3px 8px;font-size:0.75rem;">Mumbai 400001</button>
+        <button class="btn s g" onclick="searchByPincode('560001')" style="padding:3px 8px;font-size:0.75rem;">Bengaluru 560001</button>
+        <button class="btn s g" onclick="searchByPincode('700001')" style="padding:3px 8px;font-size:0.75rem;">Kolkata 700001</button>
+        <button class="btn s g" onclick="searchByPincode('600001')" style="padding:3px 8px;font-size:0.75rem;">Chennai 600001</button>
+        <button class="btn s g" onclick="searchByPincode('500001')" style="padding:3px 8px;font-size:0.75rem;">Hyderabad 500001</button>
+        <button class="btn s g" onclick="searchByPincode('380001')" style="padding:3px 8px;font-size:0.75rem;">Ahmedabad 380001</button>
+        <button class="btn s g" onclick="searchByPincode('360001')" style="padding:3px 8px;font-size:0.75rem;">Rajkot 360001</button>
+        <button class="btn s g" onclick="searchByPincode('411001')" style="padding:3px 8px;font-size:0.75rem;">Pune 411001</button>
+        <button class="btn s g" onclick="searchByPincode('302001')" style="padding:3px 8px;font-size:0.75rem;">Jaipur 302001</button>
+        <button class="btn s g" onclick="searchByPincode('226001')" style="padding:3px 8px;font-size:0.75rem;">Lucknow 226001</button>
+        <button class="btn s g" onclick="searchByPincode('160017')" style="padding:3px 8px;font-size:0.75rem;">Chandigarh 160017</button>
+      </div>
+
+      <div id="home-pincode-result"></div>
+      <div id="home-map-rankings" style="margin-top:14px"></div>
     </div>
-  </footer>
+  </div>
+</section>
 
-  <!-- UX4G Design System JS -->
-  <script src="https://cdn.ux4g.gov.in/UX4G@3.3.0/ux4g.js"></script>
-  <script src="https://cdn.ux4g.gov.in/UX4G@3.3.0/ux4g-custom.js"></script>
+<main id="main">
 
-  <!-- App scripts: engine first (state), then ui helpers, then router -->
-  <script src="assets/engine.js"></script>
-  <script src="assets/ui.js"></script>
-  <script src="assets/sync.js"></script>
-  <script src="assets/app.js"></script>
-</body>
+<section id="v-join" class="hide"><div class="grid">
+ <div class="card" id="c-join"><h2>🎫 Get a virtual token</h2>
+  <label>Your name</label><input id="nm" placeholder="Enter your full name">
+  <label>Phone number</label><input id="ph" type="tel" placeholder="e.g. 9876543210">
+  <label>Government office</label><select id="of" onchange="S.sel=this.value;fillSv();draw()"></select>
+  <label>Service</label><select id="sv" onchange="draw()"></select>
+  <div id="docs-req" style="display:none; background:#eff6ff; border-left:4px solid var(--pri); padding:10px 14px; margin-top:8px; margin-bottom:12px; font-size:0.85rem; border-radius:4px;">
+    <strong style="color:var(--pri); display:block; margin-bottom:4px;">📋 Mandatory Documents (Bring originals + 1 copy):</strong>
+    <ul id="docs-list" style="margin:0; padding-left:18px; color:#1e3a8a;"></ul>
+  </div>
+  <div style="margin:16px 0; padding:12px 14px; border:1px solid var(--bd); border-radius:8px; background:var(--bg)">
+    <label style="margin-top:0; color:var(--pri); font-weight:700; text-transform:uppercase; font-size:0.75rem; letter-spacing:1px; margin-bottom:12px; display:block">Where are you joining from?</label>
+    <label style="display:flex;gap:8px;align-items:center;color:var(--tx);font-weight:normal;margin-bottom:10px;font-size:0.95rem;cursor:pointer">
+      <input type="radio" name="joinMode" value="ON_SITE" checked style="width:18px;height:18px;margin:0;cursor:pointer;accent-color:var(--pri)">
+      I'm at the office now
+    </label>
+    <label style="display:flex;gap:8px;align-items:center;color:var(--tx);font-weight:normal;font-size:0.95rem;cursor:pointer;margin-bottom:0">
+      <input type="radio" name="joinMode" value="REMOTE" style="width:18px;height:18px;margin:0;cursor:pointer;accent-color:var(--pri)">
+      Joining from home (check-in required)
+    </label>
+  </div>
+  <label>Your travel time to office (minutes)</label><input id="tr" type="number" min="0" max="120" placeholder="e.g. 30">
+  <label>Reminders & Notifications</label>
+  <div style="display:flex;gap:16px;margin-bottom:12px;">
+    <label style="display:flex;gap:8px;align-items:center;color:var(--tx);font-weight:normal"><input type="checkbox" id="wa" style="width:auto"> WhatsApp</label>
+    <label style="display:flex;gap:8px;align-items:center;color:var(--tx);font-weight:normal"><input type="checkbox" id="sms" style="width:auto"> SMS</label>
+  </div>
+  <label style="display:flex;gap:8px;align-items:center;color:var(--tx);margin-bottom:12px;font-size:0.85rem;"><input type="checkbox" id="consent" style="width:auto"> I consent to receive queue updates via the selected channels.</label>
+  <label style="display:flex;gap:8px;align-items:center;color:var(--tx)"><input type="checkbox" id="pr" style="width:auto"> Senior citizen / Person with disability (priority)</label>
+  <button class="btn" onclick="join()">Take Token Remotely</button>
+  <div id="join-msg" style="margin-top:10px;font-weight:bold;text-align:center;"></div>
+  <div id="est" class="banner b-pri"></div>
+ </div>
+ <div class="card"><h2>📍 Live status</h2><div id="live"></div><h2 style="margin-top:16px">🕒 Best time to visit today</h2><div class="fc" id="fc"></div><div style="height:20px"></div></div>
+ <div class="card" style="grid-column:1/-1"><div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:center"><h2>🗺️ Live map & nearest office</h2><button class="btn s" onclick="locate()">📍 Use my location</button></div><div id="map" style="height:380px;width:100%;margin-top:12px;border-radius:12px;border:1px solid var(--bd);z-index:1;"></div><div id="map-rankings" style="margin-top:14px"></div></div>
+</div></section>
 
-</html>
+<section id="v-map" class="hide"><div class="grid">
+  <!-- Pan-India Government Office Map Command Center -->
+  <div class="card" style="grid-column:1/-1">
+    <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:12px">
+      <div>
+        <h2 style="margin:0;border-bottom:none;display:flex;align-items:center;gap:8px">
+          <span>🇮🇳 Pan-India Government Office Live Map & Navigation Hub</span>
+          <span class="pill" style="background:var(--ok);font-size:0.7rem;animation:pulse 2s infinite">● Real-Time Streaming</span>
+        </h2>
+        <p class="mut" style="margin:4px 0 0;font-size:0.85rem">Live nationwide network of Passport Seva Kendras, RTO offices, Collectorates & Civic Centres with real-time crowd tracking.</p>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn s" onclick="locate()" style="width:auto;display:inline-flex;align-items:center;gap:4px">📍 Track My GPS Location</button>
+        <button class="btn s g" onclick="resetToIndia()" style="width:auto">🔄 Reset Pan-India View</button>
+      </div>
+    </div>
+
+    <!-- Real-Time Metrics Strip -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(160px, 1fr));gap:10px;margin-bottom:14px;background:var(--bg);padding:10px 14px;border-radius:10px;border:1px solid var(--bd);">
+      <div style="font-size:0.8rem">
+        <span class="mut" style="display:block;font-size:0.72rem">🏛️ Monitored Offices across India</span>
+        <b style="font-size:1.2rem;color:var(--pri)">28 Centers</b>
+      </div>
+      <div style="font-size:0.8rem">
+        <span class="mut" style="display:block;font-size:0.72rem">🚦 Congestion Level</span>
+        <b style="font-size:1.2rem;color:var(--ok)">Normal (Optimized)</b>
+      </div>
+      <div style="font-size:0.8rem">
+        <span class="mut" style="display:block;font-size:0.72rem">⏱️ Real-Time Avg Queue Wait</span>
+        <b style="font-size:1.2rem;color:var(--pri)">~14 Minutes</b>
+      </div>
+      <div style="font-size:0.8rem">
+        <span class="mut" style="display:block;font-size:0.72rem">🛰️ Live Tracking Mode</span>
+        <b style="font-size:0.95rem;color:var(--ok)">GPS Active (Leaflet.js)</b>
+      </div>
+    </div>
+
+    <!-- Quick Zone Zoom Filters -->
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;align-items:center;">
+      <span style="font-size:0.78rem;font-weight:700;color:var(--mut);">Regional Zones:</span>
+      <button class="btn s g" onclick="flyToZone('all')" style="padding:4px 10px;font-size:0.78rem;">🇮🇳 All India</button>
+      <button class="btn s g" onclick="flyToZone('north')" style="padding:4px 10px;font-size:0.78rem;">🏛️ North (Delhi/UP/PB/RJ)</button>
+      <button class="btn s g" onclick="flyToZone('west')" style="padding:4px 10px;font-size:0.78rem;">🌊 West (MH/GJ)</button>
+      <button class="btn s g" onclick="flyToZone('south')" style="padding:4px 10px;font-size:0.78rem;">🌴 South (KA/TN/TS)</button>
+      <button class="btn s g" onclick="flyToZone('east')" style="padding:4px 10px;font-size:0.78rem;">🌅 East (WB/BR/AS)</button>
+      <button class="btn s g" onclick="flyToZone('central')" style="padding:4px 10px;font-size:0.78rem;">🏔️ Central (MP)</button>
+    </div>
+    
+    <div style="position:relative;">
+      <!-- PIN Code Overlay Search Bar -->
+      <div style="position:absolute;top:16px;left:50%;transform:translateX(-50%);z-index:1000;background:rgba(255,255,255,0.95);backdrop-filter:blur(8px);padding:8px 16px;border-radius:12px;box-shadow:0 8px 25px rgba(0,0,0,0.18);border:1px solid var(--bd);display:flex;align-items:center;gap:10px;width:min(460px, calc(100% - 32px));">
+        <input type="text" class="pincode-input" placeholder="Search City or PIN Code (e.g. Bengaluru, 110001, Mumbai)" style="border:none;background:transparent;outline:none;font-size:0.95rem;flex:1;color:var(--tx);font-weight:500;" onkeydown="if(event.key==='Enter') searchByPincode(this.value)">
+        <button onclick="searchByPincode(this.previousElementSibling.value)" style="background:var(--pri);color:#fff;border:none;border-radius:8px;padding:8px 16px;cursor:pointer;font-weight:700;font-size:1rem;display:flex;align-items:center;justify-content:center;" aria-label="Search PIN Code">
+          ➔
+        </button>
+      </div>
+      <div id="tab-map" style="height:560px;width:100%;border-radius:12px;border:1px solid var(--bd);z-index:1;"></div>
+    </div>
+
+    <!-- Quick Indian City PIN Code Chips -->
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:12px;align-items:center;">
+      <span style="font-size:0.78rem;font-weight:700;color:var(--mut);">Popular Cities:</span>
+      <button class="btn s g" onclick="searchByPincode('110001')" style="padding:3px 8px;font-size:0.75rem;">Delhi 110001</button>
+      <button class="btn s g" onclick="searchByPincode('400001')" style="padding:3px 8px;font-size:0.75rem;">Mumbai 400001</button>
+      <button class="btn s g" onclick="searchByPincode('560001')" style="padding:3px 8px;font-size:0.75rem;">Bengaluru 560001</button>
+      <button class="btn s g" onclick="searchByPincode('700001')" style="padding:3px 8px;font-size:0.75rem;">Kolkata 700001</button>
+      <button class="btn s g" onclick="searchByPincode('600001')" style="padding:3px 8px;font-size:0.75rem;">Chennai 600001</button>
+      <button class="btn s g" onclick="searchByPincode('500001')" style="padding:3px 8px;font-size:0.75rem;">Hyderabad 500001</button>
+      <button class="btn s g" onclick="searchByPincode('380001')" style="padding:3px 8px;font-size:0.75rem;">Ahmedabad 380001</button>
+      <button class="btn s g" onclick="searchByPincode('360001')" style="padding:3px 8px;font-size:0.75rem;">Rajkot 360001</button>
+      <button class="btn s g" onclick="searchByPincode('411001')" style="padding:3px 8px;font-size:0.75rem;">Pune 411001</button>
+      <button class="btn s g" onclick="searchByPincode('302001')" style="padding:3px 8px;font-size:0.75rem;">Jaipur 302001</button>
+      <button class="btn s g" onclick="searchByPincode('226001')" style="padding:3px 8px;font-size:0.75rem;">Lucknow 226001</button>
+      <button class="btn s g" onclick="searchByPincode('160017')" style="padding:3px 8px;font-size:0.75rem;">Chandigarh 160017</button>
+    </div>
+
+    <div id="tab-pincode-result"></div>
+    <div id="tab-map-rankings" style="margin-top:14px"></div>
+  </div>
+</div></section>
+
+<section id="v-status" class="hide"><div class="grid">
+
+ <div class="card" style="grid-column:1/-1;border:1px solid var(--pri);">
+   <h2>🔍 Recover lost token</h2>
+   <p class="mut" style="margin-top:0;font-size:0.9rem">Cleared your browser data or switched devices? Enter your phone number or token ID to recover it.</p>
+   <div style="display:flex;gap:8px;margin-top:12px;max-width:500px">
+     <input id="ts-search" placeholder="Phone or Token ID (e.g. TW-0001)" style="flex:1;margin-bottom:0">
+     <button class="btn" onclick="searchToken()" style="background:var(--pri);width:auto;padding:10px 24px">Search</button>
+   </div>
+   <div id="ts-msg" style="margin-top:10px;font-weight:bold;font-size:0.9rem"></div>
+ </div>
+
+ <div class="card" id="c-status" style="grid-column:1/-1"><h2>🎟️ My tokens</h2><div id="mine"><p class="mut">No active token yet. Take one above — you can stay home until we alert you.</p></div>
+  <h2 style="margin-top:10px">🔔 Notifications</h2><div class="log" id="log"></div></div>
+</div></section>
+
+
+<section id="v-how" class="hide"><div class="grid">
+ <div class="card"><h2>🧠 How the prediction works</h2><p>For every token we <b>simulate the counters forward</b>: each counter's remaining time plus the average service time of each person ahead is assigned to whichever counter frees up first.</p>
+ <p>That is multiplied by a <b>live learning factor</b> (exponential moving average of actual vs. expected service time), so the estimate self-corrects when officers are faster or slower than usual.</p>
+ <p>Priority tokens jump ahead of regular ones. Confidence band widens with queue position.</p></div>
+ <div class="card"><h2>🚦 Smart alerts</h2><p><b>Get ready</b> – wait ≤ travel time + 25 min.<br><b>Leave now</b> – wait ≤ travel time + 8 min.<br><b>Proceed to counter</b> – when your token is called.</p><p class="mut">Missed your slot? A token not reached within 10 min of being called is skipped and moved back.</p></div>
+ <div class="card"><h2>🏗️ Production roadmap</h2><p>SMS / WhatsApp / push alerts · Aadhaar/DigiLocker login · Document pre-check · Per-service ML model trained on historic logs · Kiosk QR check-in · Multi-language (Gujarati, Hindi) · Admin analytics.</p></div>
+</div></section>
+</main><footer><div class="tri"></div><div class="fin"><div class="fg"><div><h4>About QueueLess</h4><p>A citizen-centric system that predicts waiting time at government offices and issues virtual tokens remotely, so citizens arrive only when their turn is near.</p></div>
+<div><h4>Quick Links</h4><a href="#main" onclick="show('home')">Citizen Services</a><a href="#main" onclick="show('map')">Live Map of India</a><a href="#main" onclick="show('adm')">Officer Dashboard</a><a href="#main" onclick="show('how')">How it works</a><a href="#main">Skip to main content</a></div>
+<div><h4>Contact &amp; Help</h4><p>Helpline: 1800-XXX-XXXX (demo)<br>Email: support@queueless.example<br>Working hours: Mon–Sat, 9:30 AM – 6:10 PM</p></div>
+<div><h4>Policies</h4><span>Terms &amp; Conditions</span><span>Privacy Policy</span><span>Accessibility Statement</span><span>Hyperlinking Policy</span><span>Sitemap</span></div></div>
+<div class="fb"><span>Content owned and maintained by the QueueLess hackathon team · Last updated: 08 Oct 2026</span><span>Best viewed in the latest versions of Chrome, Edge, Firefox &amp; Safari</span></div>
+</div></footer><div id="toasts"></div>
+<script src="assets/realtime_leaflet_tracker.js"></script>
+<script src="assets/engine.js?v=4"></script>
+<script src="assets/chatbot.js?v=4"></script>
+<script src="assets/i18n.js?v=5"></script>
+<script src="assets/app_v2.js?v=5"></script>
+<script>
+  let localFS = 100;
+  window.fs = function(d) {
+    localFS = d === 0 ? 100 : Math.min(150, Math.max(80, localFS + d * 15));
+    document.documentElement.style.fontSize = localFS + "%";
+    document.body.style.fontSize = (localFS / 100) + "rem";
+    if (typeof say === 'function') say('Text size: ' + localFS + '%');
+    
+    // Also notify Leaflet maps of resize just in case
+    setTimeout(() => {
+      if (typeof mapInstances !== 'undefined') {
+        Object.values(mapInstances).forEach(inst => {
+          if (inst && inst.map) try { inst.map.invalidateSize(); } catch(e){}
+        });
+      }
+    }, 50);
+  };
+</script>
+
+<button type="button" id="ai-fab" onclick="toggleAIWidget()" aria-label="Toggle AI Assistant" style="position:fixed;bottom:-50px;right:-60px;z-index:10000;display:flex;flex-direction:column;align-items:center;background:transparent;border:none;box-shadow:none;cursor:pointer;padding:0;outline-offset:4px;">
+  <video id="ai-avatar-vid" src="assistant_bot_animation_webm-format.webm" autoplay loop muted playsinline style="width:230px;height:230px;object-fit:contain;pointer-events:none;background:transparent;"></video>
+  <img id="ai-avatar-img" src="static_bot_image.png" alt="AI Assistant" class="hide" style="width:230px;height:230px;object-fit:contain;pointer-events:none;background:transparent;transform:scale(0.75) translateX(-30px);">
+</button>
+
+<div id="ai-widget" style="position:fixed;bottom:80px;right:20px;width:min(420px, calc(100vw - 32px));height:min(580px, calc(100vh - 100px));background:var(--card);border:1px solid var(--bd);border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,0.18);z-index:9999;display:none;flex-direction:column;overflow:hidden;">
+  <div style="background:var(--pri);color:#fff;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;">
+    <div>
+      <h2 style="margin:0;font-size:1.05rem;color:#fff;display:flex;align-items:center;gap:6px;">🤖 QueueLess Assistant</h2>
+      <div style="font-size:0.7rem;opacity:0.85;">Citizen Guidance &amp; Live Queue Intelligence</div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <span id="aist" style="font-size:0.8rem;display:flex;align-items:center;gap:4px;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#4ade80;box-shadow:0 0 6px #4ade80;"></span><span style="color:#fff;font-weight:600;">Online</span></span>
+      <button type="button" class="btn s" id="ben" onclick="window.QueueLessBot ? window.QueueLessBot.resetChat() : null" style="background:rgba(255,255,255,0.2);color:#fff;border:1px solid rgba(255,255,255,0.4);border-radius:4px;font-weight:600;font-size:0.72rem;padding:2px 8px;">Reset Chat</button>
+      <button type="button" aria-label="Close AI Assistant" onclick="toggleAIWidget()" style="background:transparent;border:none;color:#fff;font-size:1.5rem;cursor:pointer;line-height:1;padding:0 4px;font-weight:600;">&times;</button>
+    </div>
+  </div>
+  <div class="msgs" id="msgs" style="flex:1;height:auto;min-height:220px;padding:12px;overflow-y:auto;"></div>
+  <div class="chips" id="chips" style="padding:4px 12px 8px 12px;display:flex;gap:6px;flex-wrap:wrap;"></div>
+  <div style="display:flex;gap:8px;padding:10px 12px;border-top:1px solid var(--bd);background:var(--bg);">
+    <input id="ci" style="flex:1;padding:8px 12px;border:1px solid var(--bd);border-radius:6px;outline:none;font-size:0.88rem;" onkeydown="if(event.key==='Enter')ask()" placeholder="Ask about documents, wait time, or departures…">
+    <button type="button" class="btn s" onclick="ask()" style="background:var(--pri);color:#fff;border-radius:6px;font-weight:600;padding:0 14px;">Send</button>
+  </div>
+</div>
+</body></html>

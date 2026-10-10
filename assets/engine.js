@@ -51,27 +51,93 @@
      SEED DATA
   ================================================================ */
   var SEED_OFFICES = [
-    { id: "off-001", name: "Central Government Services Office" },
+    { id: "col", name: "Collectorate, Rajkot" },
+    { id: "rto", name: "RTO Office, Rajkot" },
+    { id: "pas", name: "Passport Seva Kendra, Rajkot" },
+    { id: "rmc", name: "RMC Civic Centre, Rajkot" },
+    { id: "del-psk", name: "Central Passport Seva Kendra, New Delhi" },
+    { id: "del-col", name: "District Magistrate Office, New Delhi" },
+    { id: "del-rto", name: "Sarai Kale Khan RTO, New Delhi" },
+    { id: "mum-psk", name: "Passport Seva Kendra BKC, Mumbai" },
+    { id: "mum-col", name: "Mumbai Suburban Collectorate, Bandra" },
+    { id: "mum-rto", name: "Andheri / Tardeo RTO, Mumbai" },
+    { id: "blr-psk", name: "Passport Seva Kendra Koramangala, Bengaluru" },
+    { id: "blr-col", name: "Bengaluru Urban DC Office, Bengaluru" },
+    { id: "blr-rto", name: "Indiranagar RTO, Bengaluru" },
+    { id: "chn-psk", name: "Passport Seva Kendra Saligramam, Chennai" },
+    { id: "chn-col", name: "District Collectorate, Chennai" },
+    { id: "hyd-psk", name: "Passport Seva Kendra Begumpet, Hyderabad" },
+    { id: "hyd-col", name: "District Collectorate, Abids, Hyderabad" },
+    { id: "kol-psk", name: "Passport Seva Kendra Salt Lake, Kolkata" },
+    { id: "kol-col", name: "District Collectorate BBD Bagh, Kolkata" },
+    { id: "ahm-col", name: "Collectorate Office, Ahmedabad" },
+    { id: "ahm-rto", name: "Subhash Bridge RTO, Ahmedabad" },
+    { id: "pun-psk", name: "Passport Seva Kendra Mundhwa, Pune" },
+    { id: "jai-psk", name: "Passport Seva Kendra Lal Kothi, Jaipur" },
+    { id: "lko-psk", name: "Passport Seva Kendra Gomti Nagar, Lucknow" },
+    { id: "chd-col", name: "District Administrative Complex, Chandigarh" },
+    { id: "bho-col", name: "District Collectorate, Bhopal" },
+    { id: "pat-col", name: "District Collectorate, Patna" },
+    { id: "guw-col", name: "Kamrup District Collectorate, Guwahati" }
   ];
 
   var SEED_SERVICES = [
-    { id: "svc-001", officeId: "off-001", name: "Driving Licence Renewal",  avgServiceSeconds: 20, activeCounters: 2, requirements: ["Valid old licence", "Address proof", "Medical certificate", "Passport size photo"] },
-    { id: "svc-002", officeId: "off-001", name: "Ration Card Amendment",    avgServiceSeconds: 20, activeCounters: 1, requirements: ["Original ration card", "Address proof", "Aadhaar copy of family members", "Passport size photo"] },
-    { id: "svc-003", officeId: "off-001", name: "Income Certificate",       avgServiceSeconds: 20, activeCounters: 1, requirements: ["Valid photo ID", "Address proof", "Income declaration", "Supporting income records"] },
+    { id: "col-1", officeId: "col", category: "Revenue & Certification", name: "Income / Caste Certificate", avgServiceSeconds: 12 * 60, activeCounters: 2, requirements: ["Aadhaar Card & Ration Card", "Salary slip / Form 16 / Talati Panchnama", "Income Affidavit on Stamp Paper", "Father's School Leaving Certificate (for Caste)"] },
+    { id: "col-2", officeId: "col", category: "Revenue & Certification", name: "Land Record (7/12)", avgServiceSeconds: 8 * 60, activeCounters: 1, requirements: ["District, Taluka & Village Name", "Survey Number / Gut Number", "Khata Account Number", "Applicant Identity Proof (Aadhaar)"] },
+    { id: "col-3", officeId: "col", category: "General Admin", name: "Licence / Permit", avgServiceSeconds: 20 * 60, activeCounters: 1, requirements: ["Identity & Residence Proof", "Business / Establishment Details", "Prescribed Application Form", "NOC & Fee Receipt"] },
+    { id: "rto-1", officeId: "rto", category: "Licensing", name: "Learner Licence", avgServiceSeconds: 7 * 60, activeCounters: 1, requirements: ["Age Proof (10th Marks/Birth Cert/Passport)", "Address Proof (Aadhaar/Voter ID)", "Form 2 Application", "Form 1 Medical Self-Declaration", "3 Passport Photos"] },
+    { id: "rto-2", officeId: "rto", category: "Licensing", name: "Driving Test", avgServiceSeconds: 15 * 60, activeCounters: 1, requirements: ["Valid Learner's Licence (>30 days old)", "Form 4 Application", "Test Vehicle with RC, Insurance & PUC", "Test Slot Booking Confirmation"] },
+    { id: "rto-3", officeId: "rto", category: "Registration", name: "Vehicle Registration", avgServiceSeconds: 18 * 60, activeCounters: 1, requirements: ["Form 20 Application", "Form 21 Sale Certificate from Dealer", "Form 22 Roadworthiness Certificate", "Valid Motor Insurance & PUC", "Address Proof & PAN/Form 60"] },
+    { id: "pas-1", officeId: "pas", category: "Applications", name: "Fresh Passport", avgServiceSeconds: 15 * 60, activeCounters: 2, requirements: ["Date of Birth Proof (Birth Cert / 10th SLC)", "Address Proof (Aadhaar / Passbook / Utility Bill)", "Non-ECR Proof (10th/Higher Degree)", "ARN Appointment Receipt"] },
+    { id: "pas-2", officeId: "pas", category: "Applications", name: "Passport Renewal", avgServiceSeconds: 10 * 60, activeCounters: 2, requirements: ["Old Original Passport", "Self-attested copies of first & last 2 pages", "Address Proof (if address changed)", "ARN Appointment Receipt"] },
+    { id: "pas-3", officeId: "pas", category: "Clearances", name: "Police Clearance", avgServiceSeconds: 12 * 60, activeCounters: 1, requirements: ["Original Passport with self-attested copies", "Proof of current residential address", "Employment contract / Visa requirement proof", "ARN Appointment Receipt"] },
+    { id: "rmc-1", officeId: "rmc", category: "Civil Records", name: "Birth / Death Certificate", avgServiceSeconds: 6 * 60, activeCounters: 1, requirements: ["Hospital Discharge Slip / Form 1 (Birth)", "Form 4 Medical Cause of Death & Crematorium Receipt (Death)", "Parents / Informant Aadhaar Cards", "Proof of Residence"] },
+    { id: "rmc-2", officeId: "rmc", category: "Taxation", name: "Property Tax", avgServiceSeconds: 9 * 60, activeCounters: 1, requirements: ["Tenement Number / Previous Tax Bill", "Registered Sale Deed / Index-II (if transfer)", "BU Permission / Electricity Bill", "Owner's Aadhaar Card"] },
+    { id: "rmc-3", officeId: "rmc", category: "Licensing", name: "Trade Licence", avgServiceSeconds: 14 * 60, activeCounters: 1, requirements: ["Premises Property Tax Paid Receipt", "Rent Agreement + NOC or Ownership Deed", "GST Certificate / Udyam MSME Registration", "Signboard Photos & Fire NOC (if food/industry)"] },
+    { id: "del-psk-1", officeId: "del-psk", name: "Tatkaal / Normal Passport", avgServiceSeconds: 12 * 60, activeCounters: 3, requirements: [] },
+    { id: "del-psk-2", officeId: "del-psk", name: "Passport Renewal & PCC", avgServiceSeconds: 10 * 60, activeCounters: 2, requirements: [] },
+    { id: "del-col-1", officeId: "del-col", name: "Revenue & Domicile Certificate", avgServiceSeconds: 14 * 60, activeCounters: 2, requirements: [] },
+    { id: "del-rto-1", officeId: "del-rto", name: "Driving Licence & Registration", avgServiceSeconds: 11 * 60, activeCounters: 3, requirements: [] },
+    { id: "mum-psk-1", officeId: "mum-psk", name: "Fresh / Re-issue Passport", avgServiceSeconds: 13 * 60, activeCounters: 3, requirements: [] },
+    { id: "mum-col-1", officeId: "mum-col", name: "Caste / Income / Domicile", avgServiceSeconds: 15 * 60, activeCounters: 2, requirements: [] },
+    { id: "mum-rto-1", officeId: "mum-rto", name: "Learner & Permanent Licence", avgServiceSeconds: 9 * 60, activeCounters: 2, requirements: [] },
+    { id: "blr-psk-1", officeId: "blr-psk", name: "Fresh Passport & Renewal", avgServiceSeconds: 12 * 60, activeCounters: 3, requirements: [] },
+    { id: "blr-col-1", officeId: "blr-col", name: "RTC / Bhoomi Land Records", avgServiceSeconds: 10 * 60, activeCounters: 2, requirements: [] },
+    { id: "blr-rto-1", officeId: "blr-rto", name: "Vehicle RC & Driving Licence", avgServiceSeconds: 11 * 60, activeCounters: 2, requirements: [] },
+    { id: "chn-psk-1", officeId: "chn-psk", name: "Fresh / Tatkaal Passport", avgServiceSeconds: 14 * 60, activeCounters: 3, requirements: [] },
+    { id: "chn-col-1", officeId: "chn-col", name: "Community / Nativity Certificate", avgServiceSeconds: 12 * 60, activeCounters: 2, requirements: [] },
+    { id: "hyd-psk-1", officeId: "hyd-psk", name: "Fresh / Re-issue Passport", avgServiceSeconds: 11 * 60, activeCounters: 3, requirements: [] },
+    { id: "hyd-col-1", officeId: "hyd-col", name: "MeeSeva Revenue Services", avgServiceSeconds: 10 * 60, activeCounters: 2, requirements: [] },
+    { id: "kol-psk-1", officeId: "kol-psk", name: "Passport Verification & Issue", avgServiceSeconds: 13 * 60, activeCounters: 2, requirements: [] },
+    { id: "kol-col-1", officeId: "kol-col", name: "Residential & Domicile Certificate", avgServiceSeconds: 15 * 60, activeCounters: 2, requirements: [] },
+    { id: "ahm-col-1", officeId: "ahm-col", name: "Jan Seva Kendra Certificates", avgServiceSeconds: 10 * 60, activeCounters: 2, requirements: [] },
+    { id: "ahm-rto-1", officeId: "ahm-rto", name: "RTO Driving Licencing & Test", avgServiceSeconds: 12 * 60, activeCounters: 2, requirements: [] },
+    { id: "pun-psk-1", officeId: "pun-psk", name: "Fresh & Tatkaal Passport", avgServiceSeconds: 12 * 60, activeCounters: 2, requirements: [] },
+    { id: "jai-psk-1", officeId: "jai-psk", name: "Fresh / Tatkaal Passport", avgServiceSeconds: 11 * 60, activeCounters: 2, requirements: [] },
+    { id: "lko-psk-1", officeId: "lko-psk", name: "Fresh Passport & PCC", avgServiceSeconds: 14 * 60, activeCounters: 2, requirements: [] },
+    { id: "chd-col-1", officeId: "chd-col", name: "Citizen Facilitation Services", avgServiceSeconds: 10 * 60, activeCounters: 2, requirements: [] },
+    { id: "bho-col-1", officeId: "bho-col", name: "Lok Seva Kendra Services", avgServiceSeconds: 12 * 60, activeCounters: 2, requirements: [] },
+    { id: "pat-col-1", officeId: "pat-col", name: "RTPS Income & Caste Certificate", avgServiceSeconds: 15 * 60, activeCounters: 2, requirements: [] },
+    { id: "guw-col-1", officeId: "guw-col", name: "PFC Public Facilitation Services", avgServiceSeconds: 13 * 60, activeCounters: 2, requirements: [] }
   ];
 
   /* Seed citizen specs — staggered createdAt produces realistic ETAs */
   var SEED_SPECS = [
-    { serviceId: "svc-001", name: "Arjun Kumar",    phone: "+91-9876543001", wa: true,  sms: false, consent: true  },
-    { serviceId: "svc-001", name: "Priya Sharma",   phone: "+91-9876543002", wa: true,  sms: true,  consent: true  },
-    { serviceId: "svc-001", name: "Ravi Patel",     phone: "+91-9876543003", wa: false, sms: true,  consent: true  },
-    { serviceId: "svc-001", name: null,             phone: "+91-9876543004", wa: false, sms: false, consent: false },
-    { serviceId: "svc-001", name: "Meena Nair",     phone: "+91-9876543005", wa: true,  sms: false, consent: true  },
-    { serviceId: "svc-002", name: "Sunita Devi",    phone: "+91-9876543006", wa: true,  sms: false, consent: true  },
-    { serviceId: "svc-002", name: "Mohammed Rizvi", phone: "+91-9876543007", wa: false, sms: false, consent: false },
-    { serviceId: "svc-002", name: "Lakshmi R.",     phone: "+91-9876543008", wa: false, sms: true,  consent: true  },
-    { serviceId: "svc-003", name: "Vijay Kumar",    phone: "+91-9876543009", wa: true,  sms: false, consent: true  },
-    { serviceId: "svc-003", name: null,             phone: "+91-9876543010", wa: false, sms: false, consent: true  },
+    { serviceId: "col-1", name: "Arjun Kumar", phone: "+91-9876543001", wa: true, sms: false, consent: true },
+    { serviceId: "col-1", name: "Priya Sharma", phone: "+91-9876543002", wa: true, sms: true, consent: true },
+    { serviceId: "col-2", name: "Ravi Patel", phone: "+91-9876543003", wa: false, sms: true, consent: true },
+    { serviceId: "col-3", name: "Meena Nair", phone: "+91-9876543005", wa: true, sms: false, consent: true },
+    { serviceId: "rto-1", name: "Sunita Devi", phone: "+91-9876543006", wa: true, sms: false, consent: true },
+    { serviceId: "rto-2", name: "Mohammed Rizvi", phone: "+91-9876543007", wa: false, sms: false, consent: false },
+    { serviceId: "del-psk-1", name: "Vikram Malhotra", phone: "+91-9811223344", wa: true, sms: true, consent: true },
+    { serviceId: "del-psk-1", name: "Ananya Roy", phone: "+91-9811223345", wa: true, sms: false, consent: true },
+    { serviceId: "mum-psk-1", name: "Aditya Desai", phone: "+91-9820112233", wa: true, sms: true, consent: true },
+    { serviceId: "mum-rto-1", name: "Pooja Bhosle", phone: "+91-9820112234", wa: false, sms: true, consent: true },
+    { serviceId: "blr-psk-1", name: "Karthik Swamy", phone: "+91-9845112233", wa: true, sms: true, consent: true },
+    { serviceId: "blr-col-1", name: "Deepa Hegde", phone: "+91-9845112234", wa: true, sms: false, consent: true },
+    { serviceId: "kol-psk-1", name: "Sourav Ganguly", phone: "+91-9830112233", wa: true, sms: true, consent: true },
+    { serviceId: "chn-psk-1", name: "Suresh Natarajan", phone: "+91-9840112233", wa: true, sms: false, consent: true },
+    { serviceId: "hyd-psk-1", name: "Fatima Begum", phone: "+91-9848112233", wa: true, sms: true, consent: true },
   ];
 
   /* ================================================================
@@ -85,6 +151,46 @@
     auditLog:        [],
     _seq:            0,       // global token sequence (TW-0001, TW-0002, …)
   };
+
+  function loadState() {
+    try {
+      var saved = localStorage.getItem('ql_engine_state');
+      if (saved) {
+        var parsed = JSON.parse(saved);
+        // Revive dates
+        if (parsed.tokens) {
+          parsed.tokens.forEach(function(t) {
+            if (t.createdAt) t.createdAt = new Date(t.createdAt);
+            if (t.checkedInAt) t.checkedInAt = new Date(t.checkedInAt);
+            if (t.calledAt) t.calledAt = new Date(t.calledAt);
+            if (t.servedAt) t.servedAt = new Date(t.servedAt);
+            if (t.reminder60SentAt) t.reminder60SentAt = new Date(t.reminder60SentAt);
+            if (t.reminder30SentAt) t.reminder30SentAt = new Date(t.reminder30SentAt);
+          });
+        }
+        if (parsed.auditLog) {
+          parsed.auditLog.forEach(function(a) { if (a.createdAt) a.createdAt = new Date(a.createdAt); });
+        }
+        if (parsed.notificationLog) {
+          parsed.notificationLog.forEach(function(n) { if (n.createdAt) n.createdAt = new Date(n.createdAt); });
+        }
+        STATE = parsed;
+        // Merge in any static metadata that might have been updated in code (like requirements)
+        STATE.services.forEach(function(s) {
+          var seed = SEED_SERVICES.find(function(x) { return x.id === s.id; });
+          if (seed && seed.requirements) s.requirements = seed.requirements;
+        });
+      }
+    } catch(e) { console.error('Failed to load state', e); }
+  }
+
+  function saveState() {
+    try {
+      localStorage.setItem('ql_engine_state', JSON.stringify(STATE));
+    } catch(e) { console.error('Failed to save state', e); }
+  }
+  
+  loadState();
 
   /* ================================================================
      INTERNAL HELPERS
@@ -188,7 +294,41 @@
     STATE.offices         = SEED_OFFICES.map(function(o) { return Object.assign({}, o, { createdAt: now() }); });
     STATE.services        = SEED_SERVICES.map(function(s) { return Object.assign({}, s, { createdAt: now() }); });
     STATE.tokens          = [];
-    STATE.notificationLog = [];
+    STATE.notificationLog = [
+      {
+        id: uid(),
+        tokenId: "seed-1234",
+        tokenNumber: "TW-0001",
+        channel: "WhatsApp",
+        thresholdSeconds: 60,
+        status: "SENT",
+        providerMessageId: "SM" + Math.random().toString(36).slice(2, 12).toUpperCase(),
+        error: null,
+        createdAt: new Date(now().getTime() - 1000 * 60 * 15)
+      },
+      {
+        id: uid(),
+        tokenId: "seed-1235",
+        tokenNumber: "TW-0002",
+        channel: "SMS",
+        thresholdSeconds: 60,
+        status: "FAILED",
+        providerMessageId: null,
+        error: "Twilio 400: Phone unreachable",
+        createdAt: new Date(now().getTime() - 1000 * 60 * 8)
+      },
+      {
+        id: uid(),
+        tokenId: "seed-1236",
+        tokenNumber: "TW-0003",
+        channel: "WhatsApp",
+        thresholdSeconds: 30,
+        status: "SKIPPED",
+        providerMessageId: null,
+        error: "No consent given",
+        createdAt: new Date(now().getTime() - 1000 * 60 * 2)
+      }
+    ];
     STATE.auditLog        = [];
     STATE._seq            = 0;
 
@@ -197,7 +337,7 @@
       STATE._seq++;
       var tok = {
         id:               uid(),
-        officeId:         "off-001",
+        officeId:         spec.serviceId.split("-")[0],
         serviceId:        spec.serviceId,
         tokenNumber:      "TW-" + pad4(STATE._seq),
         name:             spec.name || null,
@@ -223,7 +363,7 @@
     });
 
     // Call the first ISSUED token per service so demo shows work in progress
-    ["svc-001", "svc-002", "svc-003"].forEach(function(svcId) {
+    ["col-1", "col-2", "col-3", "rto-1", "pas-1", "rmc-1"].forEach(function(svcId) {
       var first = STATE.tokens.find(function(t) {
         return t.serviceId === svcId && t.status === "ISSUED";
       });
@@ -413,6 +553,17 @@
     return enrich(t);
   };
 
+  /** Reject a token (admin-initiated) with reason */
+  Engine.reject = function (tokenId, reason) {
+    var t = STATE.tokens.find(function(t) { return t.id === tokenId; });
+    if (!t) throw new Error("Token not found.");
+    t.status = "REJECTED";
+    t.rejectReason = reason || "Other";
+    t.outcomeAt = now();
+    audit("TOKEN_REJECTED", tokenId, "admin", { notes: "Reason: " + t.rejectReason });
+    return enrich(t);
+  };
+
   /** Recall a NO_SHOW token within the demo window */
   Engine.recall = function (tokenIdOrNumber) {
     var str = String(tokenIdOrNumber).trim();
@@ -536,7 +687,73 @@
   Engine.getAuditLog        = function () { return STATE.auditLog.slice(); };
 
   /* ── Bootstrap ───────────────────────────────────────────────── */
-  Engine.seed();
+  /* ── Cross-tab Sync ──────────────────────────────────────────── */
+  var STORAGE_KEY = 'ql_state_v3';
+  function saveState() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(STATE)); } catch(e) {}
+  }
+
+  function loadState() {
+    try {
+      var ls = localStorage.getItem(STORAGE_KEY) || localStorage.getItem('ql_state_v2') || localStorage.getItem('ql_engine_state');
+      if (!ls) return false;
+      var parsed = JSON.parse(ls);
+      if (parsed && parsed.tokens) {
+        // Ensure all pan-India offices and services are present if old cache exists
+        if (!parsed.offices || parsed.offices.length < SEED_OFFICES.length) {
+          parsed.offices = SEED_OFFICES.map(function(o) { return Object.assign({}, o, { createdAt: now() }); });
+          parsed.services = SEED_SERVICES.map(function(s) { return Object.assign({}, s, { createdAt: now() }); });
+        }
+        parsed.tokens.forEach(function(t) {
+          if (t.createdAt) t.createdAt = new Date(t.createdAt);
+          if (t.calledAt) t.calledAt = new Date(t.calledAt);
+          if (t.servedAt) t.servedAt = new Date(t.servedAt);
+          if (t.noShowAt) t.noShowAt = new Date(t.noShowAt);
+          if (t.reminder60SentAt) t.reminder60SentAt = new Date(t.reminder60SentAt);
+          if (t.reminder30SentAt) t.reminder30SentAt = new Date(t.reminder30SentAt);
+          if (t.checkedInAt) t.checkedInAt = new Date(t.checkedInAt);
+        });
+        if (parsed.auditLog) parsed.auditLog.forEach(function(l) { if (l.createdAt) l.createdAt = new Date(l.createdAt); });
+        if (parsed.notificationLog) parsed.notificationLog.forEach(function(l) { if (l.createdAt) l.createdAt = new Date(l.createdAt); });
+        STATE = parsed;
+        // Merge in any static metadata that might have been updated in code (like requirements)
+        if (STATE && STATE.services) {
+          STATE.services.forEach(function(s) {
+            var seed = SEED_SERVICES.find(function(x) { return x.id === s.id; });
+            if (seed && seed.requirements) s.requirements = seed.requirements;
+          });
+        }
+        return true;
+      }
+    } catch(e) {}
+    return false;
+  }
+
+  window.addEventListener('storage', function(e) {
+    if (e.key === STORAGE_KEY || e.key === 'ql_state_v2' || e.key === 'ql_engine_state') {
+      if (loadState() && typeof window.draw === 'function') window.draw();
+    }
+  });
+
+  ['takeToken', 'callNext', 'serve', 'noShow', 'cancel', 'checkIn', 'reject', 'adjustCounters', 'runReminderCheck'].forEach(function(m) {
+    var orig = Engine[m];
+    Engine[m] = function() {
+      var res = orig.apply(this, arguments);
+      saveState();
+      return res;
+    };
+  });
+
+  var origSeed = Engine.seed;
+  Engine.seed = function() {
+    origSeed.apply(this, arguments);
+    saveState();
+  };
+
+  /* ── Bootstrap ───────────────────────────────────────────────── */
+  if (!loadState()) {
+    Engine.seed();
+  }
 
   window.Engine = Engine;
 
